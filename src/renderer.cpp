@@ -42,7 +42,7 @@ Renderer::~Renderer() {
 
 void Renderer::Render(std::list<Player> &players, std::list<Entity> &entities) {
   // Clear screen
-  SDL_SetRenderDrawColor(sdl_renderer, 96, 128, 255, 0xFF);
+  SDL_SetRenderDrawColor(sdl_renderer, 0x20, 0x20, 0x20, 0xFF);
   SDL_RenderClear(sdl_renderer);
 
 
