@@ -1,14 +1,20 @@
 #include "game.h"
 
 #include <iostream>
+#include <cstdint>
 
 #include "SDL.h"
 
 #include "config.h"
 
-Game::Game(Renderer &renderer)
+
+
+
+Game::Game(Renderer &renderer, std::size_t screen_width,
+           std::size_t screen_height)
     : renderer_(renderer),
-      player_(renderer_.MakeTexture(Config::kPlayerImage)) {}
+      player_(renderer_.MakeTexture(Config::kPlayerImage),
+              screen_width, screen_height) {}
 
 void Game::Run(Controller const &controller,
                std::size_t target_frame_duration)
