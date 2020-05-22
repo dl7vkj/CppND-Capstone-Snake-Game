@@ -14,6 +14,7 @@ namespace Config {
   // constexpr std::size_t kGridWidth{32};
   // constexpr std::size_t kGridHeight{32};
   const std::string kPlayerImage{"../gfx/player.png"};
+  const std::string kEnemyImage{"../gfx/enemy.png"};
   const std::string kBulletImage{"../gfx/playerBullet.png"};
 }
 

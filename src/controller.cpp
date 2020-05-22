@@ -6,9 +6,7 @@
 
 
 
-void Controller::HandleInput(bool &running,
-                             std::list<Player> &players,
-                             std::list<Entity> &entities) {
+void Controller::HandleInput(bool &running, Player &player) {
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
         switch (e.type)
@@ -17,10 +15,10 @@ void Controller::HandleInput(bool &running,
                 running = false;
                 break;
             case SDL_KEYDOWN:
-                KeyDown(e.key, players, entities);
+                KeyDown(e.key, player);
                 break;
             case SDL_KEYUP:
-                KeyUp(e.key, players, entities);
+                KeyUp(e.key, player);
                 break;
             default:
                 break;
@@ -28,11 +26,8 @@ void Controller::HandleInput(bool &running,
     }
 }
 
-void Controller::KeyDown(SDL_KeyboardEvent &event,
-                         std::list<Player> &players,
-                         std::list<Entity> &entities) {
+void Controller::KeyDown(SDL_KeyboardEvent &event, Player &player) {
     if (event.repeat == 0) {
-        Player &player = players.front();
 		if (event.keysym.scancode == SDL_SCANCODE_UP) {
 			player.up = true;
 		} else if (event.keysym.scancode == SDL_SCANCODE_DOWN) {
@@ -47,11 +42,8 @@ void Controller::KeyDown(SDL_KeyboardEvent &event,
 	}
 }
 
-void Controller::KeyUp(SDL_KeyboardEvent &event,
-                       std::list<Player> &players,
-                       std::list<Entity> &entities) {
+void Controller::KeyUp(SDL_KeyboardEvent &event, Player &player) {
     if (event.repeat == 0) {
-        Player &player = players.front();
 		if (event.keysym.scancode == SDL_SCANCODE_UP) {
 			player.up = false;
 		} else if (event.keysym.scancode == SDL_SCANCODE_DOWN) {

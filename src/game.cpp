@@ -13,12 +13,18 @@
 
 
 
-Game::Game(Renderer &renderer) : renderer_(renderer) {
-
-    player_texture_ = std::make_unique<SDLTexture>(
-        Config::kPlayerImage, *renderer_.GetSDLRenderer());
-    bullet_texture_ = std::make_unique<SDLTexture>(
-        Config::kBulletImage, *renderer_.GetSDLRenderer());
+Game::Game(Renderer &renderer)
+  : renderer_(renderer),
+    player_texture_(std::make_unique<SDLTexture>(
+        Config::kPlayerImage, *renderer_.GetSDLRenderer())),
+    bullet_texture_(std::make_unique<SDLTexture>(
+        Config::kBulletImage, *renderer_.GetSDLRenderer())),
+    enemy_texture_(std::make_unique<SDLTexture>(
+        Config::kEnemyImage, *renderer_.GetSDLRenderer())),
+    player_(*player_texture_.get(),
+           renderer_.GetWidth(),
+           renderer_.GetHeight())
+{
 }
 
 void Game::Run(Controller &controller,
@@ -35,22 +41,22 @@ void Game::Run(Controller &controller,
     // SDLTexture player_texture(Config::kPlayerImage, *renderer_.GetSDLRenderer());
     // SDLTexture bullet_texture(Config::kPlayerImage, *renderer_.GetSDLRenderer());
 
-    players_.emplace_back(*player_texture_.get(),
-                          renderer_.GetWidth(),
-                          renderer_.GetHeight());
-    players_.back().SetPosition(100, 100);
+    // players_.emplace_back(*player_texture_.get(),
+    //                       renderer_.GetWidth(),
+    //                       renderer_.GetHeight());
+    player_.SetPosition(100, 100);
     // entities_.emplace_back(*bullet_texture_.get(),
     //                       renderer_.GetWidth(),
     //                       renderer_.GetHeight());
 
-    Player &player = players_.front();
+    // Player &player = players_.front();
     // Entity &bullet = entities_.front();
 
     while (running) {
         frame_start = SDL_GetTicks();
 
         // Input, Update, Render - the main game loop.
-        controller.HandleInput(running, players_, entities_);
+        controller.HandleInput(running, player_);
         // if (player.fire && bullet.health == 0)
         // {
         //     bullet.x = player.x + player.w;
@@ -61,7 +67,7 @@ void Game::Run(Controller &controller,
 		// 	bullet.health = 1;
         // }
         Update();
-        renderer_.Render(players_, entities_);
+        renderer_.Render(player_, entities_);
 
         frame_end = SDL_GetTicks();
 
@@ -87,11 +93,9 @@ void Game::Run(Controller &controller,
 }
 
 void Game::Update() {
-    for (auto &player: players_) {
-        player.Update();
-        if (player.fire && player.reload == 0) {
-            FireBullet();
-        }
+    player_.Update();
+    if (player_.fire && player_.reload == 0) {
+        FireBullet();
     }
     for (auto &entity: entities_) {
         entity.Update();
@@ -101,17 +105,16 @@ void Game::Update() {
 }
 
 void Game::FireBullet() {
-    Player &player = players_.front();
     Entity bullet(*bullet_texture_.get(),
                   renderer_.GetWidth(),
                   renderer_.GetHeight());
-    bullet.x = player.x + player.w - Config::kBulletSpeed;
-	bullet.y = player.y;
+    bullet.x = player_.x + player_.w - Config::kBulletSpeed;
+	bullet.y = player_.y;
 	bullet.dx = Config::kBulletSpeed;
 	bullet.health = 1;
 
-	bullet.y += (player.h / 2) - (bullet.h / 2);
+	bullet.y += (player_.h / 2) - (bullet.h / 2);
 
-	player.reload = 8;
+	player_.reload = 8;
     entities_.emplace_back(std::move(bullet));
 }

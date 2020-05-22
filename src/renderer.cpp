@@ -40,16 +40,14 @@ Renderer::~Renderer() {
   SDL_Quit();
 }
 
-void Renderer::Render(std::list<Player> &players, std::list<Entity> &entities) {
+void Renderer::Render(Player &player, std::list<Entity> &entities) {
   // Clear screen
   SDL_SetRenderDrawColor(sdl_renderer, 0x20, 0x20, 0x20, 0xFF);
   SDL_RenderClear(sdl_renderer);
 
 
-  // Render players
-  for (auto &player: players) {
-    player.Render();
-  }
+  // Render player
+  player.Render();
   // Render entities
   for (auto &entity: entities) {
     entity.Render();

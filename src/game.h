@@ -23,8 +23,12 @@ public:
 
 private:
     Renderer &renderer_;
-    std::list<Player> players_;
+    std::unique_ptr<SDLTexture> player_texture_;
+    std::unique_ptr<SDLTexture> bullet_texture_;
+    std::unique_ptr<SDLTexture> enemy_texture_;
+    Player player_;
     std::list<Entity> entities_;
+    std::list<Entity> enemys_;
 
     // SDL_Point food;
 
@@ -38,8 +42,6 @@ private:
     // void PlaceFood();
     void FireBullet();
     void Update();
-    std::unique_ptr<SDLTexture> player_texture_;
-    std::unique_ptr<SDLTexture> bullet_texture_;
 };
 
 #endif

@@ -10,17 +10,11 @@
 
 class Controller {
 public:
-    void HandleInput(bool &running,
-                     std::list<Player> &players,
-                     std::list<Entity> &entities);
+    void HandleInput(bool &running, Player &player);
 
 protected:
-    void KeyUp(SDL_KeyboardEvent &event,
-               std::list<Player> &players,
-                std::list<Entity> &entities);
-    void KeyDown(SDL_KeyboardEvent &event,
-                 std::list<Player> &players,
-                 std::list<Entity> &entities);
+    void KeyUp(SDL_KeyboardEvent &event, Player &player);
+    void KeyDown(SDL_KeyboardEvent &event, Player &player);
 
 private:
 //   void ChangeDirection(Snake &snake, Snake::Direction input,
