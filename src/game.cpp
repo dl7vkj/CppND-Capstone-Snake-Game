@@ -23,7 +23,12 @@ Game::Game(Renderer &renderer)
         Config::kEnemyImage, *renderer_.GetSDLRenderer())),
     player_(*player_texture_.get(),
            renderer_.GetWidth(),
-           renderer_.GetHeight())
+           renderer_.GetHeight()),
+    eng_(dev_()),
+    random_y_(0, renderer_.GetHeight()),
+    random_dx_(-5, -2),
+    random_dy_(-2, +2),
+    random_timer_(30, 90)
 {
 }
 
@@ -92,18 +97,6 @@ void Game::Run(Controller &controller,
     }
 }
 
-void Game::Update() {
-    player_.Update();
-    if (player_.fire && player_.reload == 0) {
-        FireBullet();
-    }
-    for (auto &entity: entities_) {
-        entity.Update();
-    }
-    entities_.remove_if([](Entity &e){ return e.health == 0; });
-
-}
-
 void Game::FireBullet() {
     Entity bullet(*bullet_texture_.get(),
                   renderer_.GetWidth(),
@@ -117,4 +110,39 @@ void Game::FireBullet() {
 
 	player_.reload = 8;
     entities_.emplace_back(std::move(bullet));
+}
+
+void Game::SpawnEnemies() {
+    if (--enemySpawnTimer_ <= 0) {
+        Entity enemy(*enemy_texture_.get(),
+                     renderer_.GetWidth(),
+                     renderer_.GetHeight());
+        enemy.x = renderer_.GetWidth();
+        enemy.y = random_y_(eng_);
+        enemy.dx = random_dx_(eng_);
+        enemy.dy = random_dy_(eng_);
+        enemy.health = 1;
+        entities_.emplace_back(std::move(enemy));
+
+        enemySpawnTimer_ = random_timer_(eng_);
+    }
+}
+
+void Game::Update() {
+    player_.Update();
+    if (player_.fire && player_.reload == 0) {
+        FireBullet();
+    }
+
+    // for (auto &enemy: enemies_) {
+    //     enemy.Update();
+    // }
+    // enemies_.remove_if([](Entity &e){ return e.health == 0; });
+
+    for (auto &entity: entities_) {
+        entity.Update();
+    }
+    entities_.remove_if([](Entity &e){ return e.health == 0; });
+
+    SpawnEnemies();
 }

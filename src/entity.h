@@ -32,9 +32,13 @@ public:
     virtual void Update() {
         x += dx;
 		y += dy;
-        if (x > screenWidth_) {
+        if (x > screenWidth_ || x < -w) {
 			health = 0;
 		}
+        if (y <= 0 || y >= maxY_) {
+            dy = -dy;
+        }
+        y = y < 0 ? 0 : y > maxY_ ? maxY_ : y;
     }
 	SDLTexture &GetTexture() { return texture_; }
 

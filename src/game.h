@@ -1,7 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
-// #include <random>
+#include <random>
 // #include <vector>
 #include <list>
 
@@ -28,19 +28,23 @@ private:
     std::unique_ptr<SDLTexture> enemy_texture_;
     Player player_;
     std::list<Entity> entities_;
-    std::list<Entity> enemys_;
+    // std::list<Entity> enemies_;
+    int enemySpawnTimer_{0};
 
     // SDL_Point food;
 
-    // std::random_device dev;
-    // std::mt19937 engine;
-    // std::uniform_int_distribution<int> random_w;
-    // std::uniform_int_distribution<int> random_h;
+    std::random_device dev_;
+    std::mt19937 eng_;
+    std::uniform_int_distribution<int> random_y_;
+    std::uniform_int_distribution<int> random_dx_;
+    std::uniform_int_distribution<int> random_dy_;
+    std::uniform_int_distribution<int> random_timer_;
 
     // int score{0};
 
     // void PlaceFood();
     void FireBullet();
+    void SpawnEnemies();
     void Update();
 };
 
