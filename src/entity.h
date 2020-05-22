@@ -9,6 +9,9 @@
 
 class Entity {
 public:
+
+    enum Side{kPlayer, kEnemy, kUnknown};
+
 	Entity(SDLTexture &texture,
            std::size_t screen_width,
            std::size_t screen_height)
@@ -35,10 +38,11 @@ public:
         if (x > screenWidth_ || x < -w) {
 			health = 0;
 		}
-        if (y <= 0 || y >= maxY_) {
-            dy = -dy;
-        }
+        // if (y <= 0 || y >= maxY_) {
+        //     dy = -dy;
+        // }
         y = y < 0 ? 0 : y > maxY_ ? maxY_ : y;
+        reload--;
     }
 	SDLTexture &GetTexture() { return texture_; }
 
@@ -51,6 +55,7 @@ public:
 	float dy{0};
 	int health{0};
     int reload{0};
+    Side side{kUnknown};
 protected:
 	SDLTexture &texture_;
     std::size_t screenWidth_;

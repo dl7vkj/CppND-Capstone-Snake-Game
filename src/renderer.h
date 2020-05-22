@@ -15,7 +15,8 @@ class Renderer {
   Renderer(const std::size_t screen_width, const std::size_t screen_height);
   ~Renderer();
 
-  void Render(Player &player, std::list<Entity> &entities);
+  void Render(Player &player, std::list<Entity> &entities,
+              std::list<Entity> &enemies);
   void UpdateWindowTitle(int fps);
 
   // SDLTexture &MakeTexture(std::string filename) {

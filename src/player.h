@@ -22,7 +22,10 @@ public:
         this->x = x;
         this->y = y;
     }
-    void Render() const override { texture_.Blit(x, y); }
+    void Render() const override {
+        if (health)
+            texture_.Blit(x, y);
+    }
     void Update() override {
         dx = 0;
         dy = 0;

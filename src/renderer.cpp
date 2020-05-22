@@ -40,7 +40,8 @@ Renderer::~Renderer() {
   SDL_Quit();
 }
 
-void Renderer::Render(Player &player, std::list<Entity> &entities) {
+void Renderer::Render(Player &player, std::list<Entity> &entities,
+                      std::list<Entity> &enemies) {
   // Clear screen
   SDL_SetRenderDrawColor(sdl_renderer, 0x20, 0x20, 0x20, 0xFF);
   SDL_RenderClear(sdl_renderer);
@@ -48,6 +49,10 @@ void Renderer::Render(Player &player, std::list<Entity> &entities) {
 
   // Render player
   player.Render();
+  // Render enemies
+  for (auto &enemy: enemies) {
+    enemy.Render();
+  }
   // Render entities
   for (auto &entity: entities) {
     entity.Render();

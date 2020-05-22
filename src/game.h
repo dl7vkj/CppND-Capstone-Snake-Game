@@ -26,9 +26,10 @@ private:
     std::unique_ptr<SDLTexture> player_texture_;
     std::unique_ptr<SDLTexture> bullet_texture_;
     std::unique_ptr<SDLTexture> enemy_texture_;
+    std::unique_ptr<SDLTexture> alien_bullet_texture_;
     Player player_;
     std::list<Entity> entities_;
-    // std::list<Entity> enemies_;
+    std::list<Entity> enemies_;
     int enemySpawnTimer_{0};
 
     // SDL_Point food;
@@ -39,10 +40,16 @@ private:
     std::uniform_int_distribution<int> random_dx_;
     std::uniform_int_distribution<int> random_dy_;
     std::uniform_int_distribution<int> random_timer_;
+    std::uniform_int_distribution<int> random_alien_bullet_;
 
     // int score{0};
 
     // void PlaceFood();
+    bool BulletHitFighter(Entity &b);
+    void CalcSlope(int x1, int y1, int x2, int y2, float *dx, float *dy);
+    bool Collision(int x1, int y1, int w1, int h1,
+                   int x2, int y2, int w2, int h2);
+    void FireAlienBullet(Entity &e);
     void FireBullet();
     void SpawnEnemies();
     void Update();
