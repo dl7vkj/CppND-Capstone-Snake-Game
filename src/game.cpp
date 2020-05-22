@@ -6,17 +6,14 @@
 #include "SDL.h"
 
 #include "config.h"
+#include "sdl_texture.h"
 
 
 
 
-Game::Game(Renderer &renderer, std::size_t screen_width,
-           std::size_t screen_height)
-    : renderer_(renderer),
-      player_(renderer_.MakeTexture(Config::kPlayerImage),
-              screen_width, screen_height) {}
+Game::Game(Renderer &renderer) : renderer_(renderer) {}
 
-void Game::Run(Controller const &controller,
+void Game::Run(Controller &controller,
                std::size_t target_frame_duration)
 {
     Uint32 title_timestamp = SDL_GetTicks();
@@ -26,15 +23,18 @@ void Game::Run(Controller const &controller,
     int frame_count = 0;
     bool running = true;
 
-    player_.SetPosition(100, 100);
+    // player_.SetPosition(100, 100);
+    SDLTexture texture(Config::kPlayerImage, *renderer_.GetSDLRenderer());
+    players_.emplace_back(texture, renderer_.GetWidth(), renderer_.GetHeight());
+    players_.back().SetPosition(100, 100);
 
     while (running) {
         frame_start = SDL_GetTicks();
 
         // Input, Update, Render - the main game loop.
-        controller.HandleInput(player_, running);
+        controller.HandleInput(running, players_, entities_);
         Update();
-        renderer_.Render(player_);
+        renderer_.Render(players_, entities_);
 
         frame_end = SDL_GetTicks();
 
@@ -60,5 +60,10 @@ void Game::Run(Controller const &controller,
 }
 
 void Game::Update() {
-    player_.Update();
+    for (auto &player: players_) {
+        player.Update();
+    }
+    for (auto &entity: entities_) {
+        entity.Update();
+    }
 }

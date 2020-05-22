@@ -11,7 +11,7 @@
 class SDLTexture {
 // TODO: Rule of five
 public:
-    SDLTexture (std::string &filename, SDL_Renderer &sdl_renderer)
+    SDLTexture (std::string const &filename, SDL_Renderer &sdl_renderer)
     : renderer_(sdl_renderer)
     {
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO,

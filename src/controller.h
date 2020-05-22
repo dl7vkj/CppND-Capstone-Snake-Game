@@ -1,17 +1,26 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
+#include <list>
+
 #include "SDL.h"
+
 #include "player.h"
 
 
 class Controller {
 public:
-    void HandleInput(Player &player, bool &running) const;
+    void HandleInput(bool &running,
+                     std::list<Player> &players,
+                     std::list<Entity> &entities);
 
 protected:
-    void KeyUp(Player &player, SDL_KeyboardEvent &event) const;
-    void KeyDown(Player &player, SDL_KeyboardEvent &event) const;
+    void KeyUp(SDL_KeyboardEvent &event,
+               std::list<Player> &players,
+                std::list<Entity> &entities);
+    void KeyDown(SDL_KeyboardEvent &event,
+                 std::list<Player> &players,
+                 std::list<Entity> &entities);
 
 private:
 //   void ChangeDirection(Snake &snake, Snake::Direction input,

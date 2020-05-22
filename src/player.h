@@ -4,30 +4,24 @@
 #include <cstdint>
 #include <iostream>
 
-#include "config.h"
+#include "entity.h"
 #include "sdl_texture.h"
 
 
-class Player {
+class Player : public Entity {
 public:
     Player(SDLTexture &texture,
            std::size_t screen_width,
            std::size_t screen_height)
-        : texture_(texture),
-          screenWidth_(screen_width),
-          screenHeight_(screen_height)
-    {
-        maxX_ = screenWidth_ - texture_.GetWidth();
-        maxY_ = screenHeight_ - texture_.GetHeight();
-        std::cout << "maxX=" << texture_.GetWidth() << " maxY=" << texture_.GetHeight() << "\n";
-    }
+        : Entity(texture, screen_width, screen_height)
+    {}
 
     void SetPosition(int x, int y) {
         x_ = x;
         y_ = y;
     }
-    void Render() const { texture_.Blit(x_, y_); }
-    void Update() {
+    void Render() const override { texture_.Blit(x_, y_); }
+    void Update() override {
         if (up){
 			y_ -= 4;
 		}
@@ -48,15 +42,16 @@ public:
     bool down{false};
     bool left{false};
     bool right{false};
+    bool fire{false};
 
 private:
-    int x_{0};
-    int y_{0};
-    SDLTexture &texture_;
-    std::size_t screenWidth_;
-    std::size_t screenHeight_;
-    int maxX_;
-    int maxY_;
+    // int x_{0};
+    // int y_{0};
+    // SDLTexture &texture_;
+    // std::size_t screenWidth_;
+    // std::size_t screenHeight_;
+    // int maxX_;
+    // int maxY_;
 };
 
 
