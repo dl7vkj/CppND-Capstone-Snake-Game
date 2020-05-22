@@ -11,7 +11,7 @@ public:
         x_ = x;
         y_ = y;
     }
-    void Render() const {texture_.Blit(x_, y_); }
+    void Render() const { texture_.Blit(x_, y_); }
 private:
     int x_{0};
     int y_{0};

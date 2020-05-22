@@ -9,6 +9,7 @@
 
 
 class SDLTexture {
+// TODO: Rule of five
 public:
     SDLTexture (std::string &filename, SDL_Renderer &sdl_renderer)
     : renderer_(sdl_renderer)

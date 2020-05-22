@@ -4,18 +4,16 @@
 #include <vector>
 #include <string>
 #include "SDL.h"
-#include "snake.h"
 #include "player.h"
 #include "sdl_texture.h"
 
 class Renderer {
  public:
-  Renderer(const std::size_t screen_width, const std::size_t screen_height,
-           const std::size_t grid_width, const std::size_t grid_height);
+  Renderer(const std::size_t screen_width, const std::size_t screen_height);
   ~Renderer();
 
-  void Render(Snake const snake, SDL_Point const &food, Player const &player);
-  void UpdateWindowTitle(int score, int fps);
+  void Render(Player const &player);
+  void UpdateWindowTitle(int fps);
 
   SDLTexture &MakeTexture(std::string filename) {
     SDLTexture texture(filename, *sdl_renderer);
@@ -30,8 +28,6 @@ class Renderer {
 
   const std::size_t screen_width;
   const std::size_t screen_height;
-  const std::size_t grid_width;
-  const std::size_t grid_height;
 };
 
 #endif
