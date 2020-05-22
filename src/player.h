@@ -12,6 +12,29 @@ public:
         y_ = y;
     }
     void Render() const { texture_.Blit(x_, y_); }
+    void Update() {
+        if (up){
+			y_ -= 4;
+		}
+
+		if (down) {
+			y_ += 4;
+		}
+
+		if (left) {
+			x_ -= 4;
+		}
+
+		if (right) {
+			x_ += 4;
+		}
+    }
+
+    bool up{false};
+    bool down{false};
+    bool left{false};
+    bool right{false};
+
 private:
     int x_{0};
     int y_{0};
