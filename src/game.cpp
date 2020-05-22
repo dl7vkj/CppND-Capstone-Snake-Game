@@ -1,16 +1,23 @@
 #include "game.h"
+
 #include <iostream>
+
 #include "SDL.h"
 
-Game::Game(std::size_t grid_width, std::size_t grid_height)
-    : snake(grid_width, grid_height),
+#include "config.h"
+
+
+Game::Game(std::size_t grid_width, std::size_t grid_height, Renderer &renderer)
+    : renderer_(renderer),
+      snake(grid_width, grid_height),
+      player_(renderer_.MakeTexture(Config::kPlayerImage)),
       engine(dev()),
       random_w(0, static_cast<int>(grid_width-1)),
       random_h(0, static_cast<int>(grid_height-1)) {
   PlaceFood();
 }
 
-void Game::Run(Controller const &controller, Renderer &renderer,
+void Game::Run(Controller const &controller,
                std::size_t target_frame_duration) {
   Uint32 title_timestamp = SDL_GetTicks();
   Uint32 frame_start;
@@ -19,13 +26,15 @@ void Game::Run(Controller const &controller, Renderer &renderer,
   int frame_count = 0;
   bool running = true;
 
+  player_.SetPosition(100, 100);
+
   while (running) {
     frame_start = SDL_GetTicks();
 
     // Input, Update, Render - the main game loop.
     controller.HandleInput(running, snake);
     Update();
-    renderer.Render(snake, food);
+    renderer_.Render(snake, food, player_);
 
     frame_end = SDL_GetTicks();
 
@@ -36,7 +45,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
 
     // After every second, update the window title.
     if (frame_end - title_timestamp >= 1000) {
-      renderer.UpdateWindowTitle(score, frame_count);
+      renderer_.UpdateWindowTitle(score, frame_count);
       frame_count = 0;
       title_timestamp = frame_end;
     }
@@ -79,7 +88,7 @@ void Game::Update() {
     PlaceFood();
     // Grow snake and increase speed.
     snake.GrowBody();
-    snake.speed += 0.02;
+    snake.speed += 0.001;
   }
 }
 

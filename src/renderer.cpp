@@ -2,6 +2,11 @@
 #include <iostream>
 #include <string>
 
+#include "SDL_image.h"
+
+
+
+
 Renderer::Renderer(const std::size_t screen_width,
                    const std::size_t screen_height,
                    const std::size_t grid_width, const std::size_t grid_height)
@@ -31,6 +36,8 @@ Renderer::Renderer(const std::size_t screen_width,
     std::cerr << "Renderer could not be created.\n";
     std::cerr << "SDL_Error: " << SDL_GetError() << "\n";
   }
+
+  IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
 }
 
 Renderer::~Renderer() {
@@ -38,7 +45,8 @@ Renderer::~Renderer() {
   SDL_Quit();
 }
 
-void Renderer::Render(Snake const snake, SDL_Point const &food) {
+void Renderer::Render(Snake const snake, SDL_Point const &food,
+                      Player const &player) {
   SDL_Rect block;
   block.w = screen_width / grid_width;
   block.h = screen_height / grid_height;
@@ -70,6 +78,9 @@ void Renderer::Render(Snake const snake, SDL_Point const &food) {
     SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0x00, 0x00, 0xFF);
   }
   SDL_RenderFillRect(sdl_renderer, &block);
+
+  // Render player
+  player.Render();
 
   // Update Screen
   SDL_RenderPresent(sdl_renderer);
