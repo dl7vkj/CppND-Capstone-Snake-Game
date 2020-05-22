@@ -16,21 +16,38 @@ public:
           screenWidth_(screen_width),
           screenHeight_(screen_height)
     {
-        maxX_ = screenWidth_ - texture_.GetWidth();
-        maxY_ = screenHeight_ - texture_.GetHeight();
-        std::cout << "maxX=" << texture_.GetWidth() << " maxY=" << texture_.GetHeight() << "\n";
+        w = texture_.GetWidth();
+        h = texture_.GetHeight();
+        maxX_ = screenWidth_ - w;
+        maxY_ = screenHeight_ - h;
     }
 	virtual ~Entity() {}
-	virtual void Render() const {}
-    virtual void Update() {}
+
+	virtual void Render() const {
+        if (health > 0) {
+            texture_.Blit(x, y);
+        }
+    }
+
+    virtual void Update() {
+        x += dx;
+		y += dy;
+        if (x > screenWidth_) {
+			health = 0;
+		}
+    }
 	SDLTexture &GetTexture() { return texture_; }
 
 
-    float x_{0};
-	float y_{0};
-	float dx_{0};
-	float dy_{0};
-	float health_{0};
+    float x{0};
+	float y{0};
+    int w;
+	int h;
+	float dx{0};
+	float dy{0};
+	int health{0};
+    int reload{0};
+protected:
 	SDLTexture &texture_;
     std::size_t screenWidth_;
     std::size_t screenHeight_;

@@ -3,7 +3,9 @@
 
 #include <cstdint>
 #include <iostream>
+#include <list>
 
+#include "config.h"
 #include "entity.h"
 #include "sdl_texture.h"
 
@@ -17,25 +19,36 @@ public:
     {}
 
     void SetPosition(int x, int y) {
-        x_ = x;
-        y_ = y;
+        this->x = x;
+        this->y = y;
     }
-    void Render() const override { texture_.Blit(x_, y_); }
+    void Render() const override { texture_.Blit(x, y); }
     void Update() override {
+        dx = 0;
+        dy = 0;
+
+        if (reload > 0) {
+            reload--;
+        }
+
         if (up){
-			y_ -= 4;
+			dy = -Config::kPlayerSpeed;
 		}
 		if (down) {
-			y_ += 4;
+			dy = Config::kPlayerSpeed;
 		}
 		if (left) {
-			x_ -= 4;
+			dx = -Config::kPlayerSpeed;
 		}
 		if (right) {
-			x_ += 4;
+			dx = Config::kPlayerSpeed;
 		}
-        x_ = x_ < 0 ? 0 : x_ > maxX_ ? maxX_ : x_;
-        y_ = y_ < 0 ? 0 : y_ > maxY_ ? maxY_ : y_;
+
+        x += dx;
+        y += dy;
+
+        x = x < 0 ? 0 : x > maxX_ ? maxX_ : x;
+        y = y < 0 ? 0 : y > maxY_ ? maxY_ : y;
     }
 
     bool up{false};

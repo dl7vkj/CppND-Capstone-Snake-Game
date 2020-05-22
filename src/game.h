@@ -36,7 +36,10 @@ private:
     // int score{0};
 
     // void PlaceFood();
+    void FireBullet();
     void Update();
+    std::unique_ptr<SDLTexture> player_texture_;
+    std::unique_ptr<SDLTexture> bullet_texture_;
 };
 
 #endif
