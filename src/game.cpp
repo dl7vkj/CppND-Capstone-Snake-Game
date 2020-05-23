@@ -158,7 +158,9 @@ void Game::FireAlienBullet(Entity &e) {
 
     bullet.x += (e.w / 2) - (bullet.w / 2);
 	bullet.y += (e.h / 2) - (bullet.h / 2);
-
+    if (e.x - player_.x < 100) {
+        return;
+    }
     CalcSlope(player_.x + (player_.w / 2), player_.y + (player_.h / 2), e.x, e.y, &bullet.dx, &bullet.dy);
 
 	bullet.dx *= Config::kAlienBulletSpeed;
@@ -203,6 +205,9 @@ void Game::SpawnEnemies() {
 
 void Game::Update() {
     if (player_.health <= 0) {
+        enemies_.clear();
+        entities_.clear();
+        player_.health = 2;
         return;
     }
     player_.Update();
