@@ -37,6 +37,7 @@ Renderer::Renderer(const std::size_t screen_width,
 
 Renderer::~Renderer() {
   SDL_DestroyWindow(sdl_window);
+  IMG_Quit();
   SDL_Quit();
 }
 

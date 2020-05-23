@@ -12,7 +12,8 @@
 
 class Renderer {
  public:
-  Renderer(const std::size_t screen_width, const std::size_t screen_height);
+  // Render() = delete;
+  explicit Renderer(const std::size_t screen_width, const std::size_t screen_height);
   ~Renderer();
 
   void Render(Player &player, std::list<Entity> &entities,
@@ -25,9 +26,9 @@ class Renderer {
   //   return textures_.back();
   // }
 
-  std::size_t GetWidth() const { return screenWidth_; }
-  std::size_t GetHeight() const { return screenHeight_; }
-  SDL_Renderer *GetSDLRenderer() { return sdl_renderer; }
+  std::size_t GetScreenWidth() const { return screenWidth_; }
+  std::size_t GetScreenHeight() const { return screenHeight_; }
+  SDL_Renderer &GetSDLRenderer() { return *sdl_renderer; }
 
  private:
   SDL_Window *sdl_window;

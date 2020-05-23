@@ -10,76 +10,60 @@
 
 #include "config.h"
 #include "sdl_texture.h"
+// #include "SDL_ttf.h"
 
 
 
-
-Game::Game(Renderer &renderer)
-  : renderer_(renderer),
-    player_texture_(std::make_unique<SDLTexture>(
-        Config::kPlayerImage, *renderer_.GetSDLRenderer())),
-    bullet_texture_(std::make_unique<SDLTexture>(
-        Config::kBulletImage, *renderer_.GetSDLRenderer())),
-    enemy_texture_(std::make_unique<SDLTexture>(
-        Config::kEnemyImage, *renderer_.GetSDLRenderer())),
-    alien_bullet_texture_(std::make_unique<SDLTexture>(
-        Config::kAlienBulletImage, *renderer_.GetSDLRenderer())),
-    player_(*player_texture_.get(),
-           renderer_.GetWidth(),
-           renderer_.GetHeight()),
+Game::Game()
+  : running_(true),
     eng_(dev_()),
-    random_y_(0, renderer_.GetHeight()),
+    random_y_(0, Config::kScreenHeight),
     random_dx_(-5, -2),
     random_dy_(-2, +2),
     random_timer_(30, 90),
     random_alien_bullet_(0, 120)
 {
+    // Create the renderer
+    renderer_ = std::make_unique<Renderer>(Config::kScreenWidth, Config::kScreenHeight);
+    // Create the controller
+    // controller_ = std::make_unique<Controller>();
+    // Create textures
+    player_texture_ = std::make_unique<SDLTexture>(
+        Config::kPlayerImage, renderer_->GetSDLRenderer());
+    bullet_texture_ = std::make_unique<SDLTexture>(
+        Config::kBulletImage, renderer_->GetSDLRenderer());
+    enemy_texture_ = std::make_unique<SDLTexture>(
+        Config::kEnemyImage, renderer_->GetSDLRenderer());
+    alien_bullet_texture_ = std::make_unique<SDLTexture>(
+        Config::kAlienBulletImage, renderer_->GetSDLRenderer());
+    // Create player
+    player_ = std::make_unique<Player>(*player_texture_.get(),
+                                        renderer_->GetScreenWidth(),
+                                        renderer_->GetScreenHeight());
+
+    // ticksCount_ = SDL_GetTicks();
 }
 
-void Game::Run(Controller &controller,
-               std::size_t target_frame_duration)
+void Game::Run()
 {
+    // TODO: Init in constructor!
     Uint32 title_timestamp = SDL_GetTicks();
     Uint32 frame_start;
     Uint32 frame_end;
     Uint32 frame_duration;
     int frame_count = 0;
-    bool running = true;
 
-    // player_.SetPosition(100, 100);
-    // SDLTexture player_texture(Config::kPlayerImage, *renderer_.GetSDLRenderer());
-    // SDLTexture bullet_texture(Config::kPlayerImage, *renderer_.GetSDLRenderer());
+    player_->SetPosition(100, 100);
+    player_->side = Entity::Side::kPlayer;
+    player_->health = 2;
 
-    // players_.emplace_back(*player_texture_.get(),
-    //                       renderer_.GetWidth(),
-    //                       renderer_.GetHeight());
-    player_.SetPosition(100, 100);
-    player_.side = Entity::Side::kPlayer;
-    player_.health = 2;
-    // entities_.emplace_back(*bullet_texture_.get(),
-    //                       renderer_.GetWidth(),
-    //                       renderer_.GetHeight());
 
-    // Player &player = players_.front();
-    // Entity &bullet = entities_.front();
-
-    while (running) {
+    while (running_) {
         frame_start = SDL_GetTicks();
-
-        // Input, Update, Render - the main game loop.
-        controller.HandleInput(running, player_);
-        // if (player.fire && bullet.health == 0)
-        // {
-        //     bullet.x = player.x + player.w;
-		// 	bullet.y = player.y + player.h/2 - bullet.h/2;
-		// 	bullet.dx = 16;
-        //     bullet.x -= bullet.dx;
-		// 	bullet.dy = 0;
-		// 	bullet.health = 1;
-        // }
-        Update();
-        renderer_.Render(player_, entities_, enemies_);
-
+        // Input, Update, Output - the main game loop.
+        ProcessInput();
+        UpdateGame();
+        GenerateOutput();
         frame_end = SDL_GetTicks();
 
         // Keep track of how long each loop through the input/update/render cycle
@@ -87,9 +71,10 @@ void Game::Run(Controller &controller,
         frame_count++;
         frame_duration = frame_end - frame_start;
 
+        // TODO: Move to output
         // After every second, update the window title.
         if (frame_end - title_timestamp >= 1000) {
-            renderer_.UpdateWindowTitle(frame_count);
+            renderer_->UpdateWindowTitle(frame_count);
             frame_count = 0;
             title_timestamp = frame_end;
         }
@@ -97,10 +82,67 @@ void Game::Run(Controller &controller,
         // If the time for this frame is too small (i.e. frame_duration is
         // smaller than the target ms_per_frame), delay the loop to
         // achieve the correct frame rate.
-        if (frame_duration < target_frame_duration) {
-            SDL_Delay(target_frame_duration - frame_duration);
+        if (frame_duration < 16) {
+            SDL_Delay(16 - frame_duration);
         }
     }
+}
+
+void Game::ProcessInput() {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        switch (event.type)
+        {
+            case SDL_QUIT:
+                running_ = false;
+                break;
+            // case SDL_KEYDOWN:
+            //     KeyDown(e.key, player);
+            //     break;
+            // case SDL_KEYUP:
+            //     KeyUp(e.key, player);
+            //     break;
+            default:
+                break;
+        }
+    }
+    const uint8_t *keyboardState = SDL_GetKeyboardState(NULL);
+}
+
+void Game::UpdateGame() {
+
+    if (player_->health <= 0) {
+        enemies_.clear();
+        entities_.clear();
+        player_->health = 2;
+        return;
+    }
+    player_->Update();
+    if (player_->fire && player_->reload == 0) {
+        FireBullet();
+    }
+
+    for (auto &enemy: enemies_) {
+        enemy.Update();
+        if (enemy.reload <= 0) {
+            FireAlienBullet(enemy);
+        }
+    }
+    enemies_.remove_if([](Entity &e){ return e.health == 0; });
+
+    for (auto &entity: entities_) {
+        entity.Update();
+        if (entity.health && BulletHitFighter(entity)) {
+            entity.health = 0;
+        }
+    }
+    entities_.remove_if([](Entity &e){ return e.health == 0; });
+
+    SpawnEnemies();
+}
+
+void Game::GenerateOutput() {
+    renderer_->Render(*player_.get(), entities_, enemies_);
 }
 
 bool Game::BulletHitFighter(Entity &b) {
@@ -113,7 +155,7 @@ bool Game::BulletHitFighter(Entity &b) {
             return true;
         }
     }
-    Player &e = player_;
+    Player &e = *player_.get();
     if (e.side != b.side
         && Collision(b.x, b.y, b.w, b.h, e.x, e.y, e.w, e.h)) {
         b.health = 0;
@@ -149,8 +191,8 @@ bool Game::Collision(int x1, int y1, int w1, int h1,
 
 void Game::FireAlienBullet(Entity &e) {
     Entity bullet(*alien_bullet_texture_.get(),
-                  renderer_.GetWidth(),
-                  renderer_.GetHeight());
+                  renderer_->GetScreenWidth(),
+                  renderer_->GetScreenHeight());
     bullet.x = e.x;// + e.w - Config::kBulletSpeed;
 	bullet.y = e.y;
 	bullet.health = 1;
@@ -158,10 +200,10 @@ void Game::FireAlienBullet(Entity &e) {
 
     bullet.x += (e.w / 2) - (bullet.w / 2);
 	bullet.y += (e.h / 2) - (bullet.h / 2);
-    if (e.x - player_.x < 100) {
+    if (e.x - player_->x < 100) {
         return;
     }
-    CalcSlope(player_.x + (player_.w / 2), player_.y + (player_.h / 2), e.x, e.y, &bullet.dx, &bullet.dy);
+    CalcSlope(player_->x + (player_->w / 2), player_->y + (player_->h / 2), e.x, e.y, &bullet.dx, &bullet.dy);
 
 	bullet.dx *= Config::kAlienBulletSpeed;
     bullet.dy *= Config::kAlienBulletSpeed;
@@ -172,26 +214,26 @@ void Game::FireAlienBullet(Entity &e) {
 
 void Game::FireBullet() {
     Entity bullet(*bullet_texture_.get(),
-                  renderer_.GetWidth(),
-                  renderer_.GetHeight());
-    bullet.x = player_.x + player_.w - Config::kBulletSpeed;
-	bullet.y = player_.y;
+                  renderer_->GetScreenWidth(),
+                  renderer_->GetScreenHeight());
+    bullet.x = player_->x + player_->w - Config::kBulletSpeed;
+	bullet.y = player_->y;
 	bullet.dx = Config::kBulletSpeed;
 	bullet.health = 1;
     bullet.side = Entity::Side::kPlayer;
 
-	bullet.y += (player_.h / 2) - (bullet.h / 2);
+	bullet.y += (player_->h / 2) - (bullet.h / 2);
 
-	player_.reload = 8;
+	player_->reload = 8;
     entities_.emplace_back(std::move(bullet));
 }
 
 void Game::SpawnEnemies() {
     if (--enemySpawnTimer_ <= 0) {
         Entity enemy(*enemy_texture_.get(),
-                     renderer_.GetWidth(),
-                     renderer_.GetHeight());
-        enemy.x = renderer_.GetWidth();
+                     renderer_->GetScreenWidth(),
+                     renderer_->GetScreenHeight());
+        enemy.x = renderer_->GetScreenWidth();
         enemy.y = random_y_(eng_);
         enemy.dx = random_dx_(eng_);
         enemy.dy = 0;//random_dy_(eng_);
@@ -201,35 +243,4 @@ void Game::SpawnEnemies() {
 
         enemySpawnTimer_ = random_timer_(eng_);
     }
-}
-
-void Game::Update() {
-    if (player_.health <= 0) {
-        enemies_.clear();
-        entities_.clear();
-        player_.health = 2;
-        return;
-    }
-    player_.Update();
-    if (player_.fire && player_.reload == 0) {
-        FireBullet();
-    }
-
-    for (auto &enemy: enemies_) {
-        enemy.Update();
-        if (enemy.reload <= 0) {
-            FireAlienBullet(enemy);
-        }
-    }
-    enemies_.remove_if([](Entity &e){ return e.health == 0; });
-
-    for (auto &entity: entities_) {
-        entity.Update();
-        if (entity.health && BulletHitFighter(entity)) {
-            entity.health = 0;
-        }
-    }
-    entities_.remove_if([](Entity &e){ return e.health == 0; });
-
-    SpawnEnemies();
 }
