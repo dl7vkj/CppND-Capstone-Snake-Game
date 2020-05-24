@@ -23,7 +23,7 @@ public:
     void Run();
     Renderer *GetRenderer() { return renderer_.get(); }
     void AddActor(std::unique_ptr<Actor> actor) {
-        actors_.emplace_back(std::move(actor));
+        pendingActors_.emplace_back(std::move(actor));
     }
     void RemoveActor() {}
     // int GetScore() const;
@@ -37,6 +37,7 @@ private:
     // Renderer renderer_;
     std::unique_ptr<Renderer> renderer_;
     std::vector<std::unique_ptr<Actor>> actors_;
+    std::vector<std::unique_ptr<Actor>> pendingActors_;
     // std::unique_ptr<Controller> controller_;
 
     // TODO: flyweight pattern

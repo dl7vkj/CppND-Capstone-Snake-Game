@@ -133,6 +133,18 @@ void Game::UpdateGame() {
     for (auto &actor: actors_) {
         actor->Update();
     }
+
+    // Add pending actors to actors vector
+    std::reverse(pendingActors_.begin(), pendingActors_.end());
+    while (pendingActors_.empty() == false) {
+        actors_.emplace_back(std::move(pendingActors_.back()));
+        pendingActors_.pop_back();
+    }
+
+    // Remove died actors
+    actors_.erase(std::remove_if(actors_.begin(), actors_.end(),
+        [](auto const &a){ return a->isAlive == false; }), actors_.end());
+
 }
 
 void Game::GenerateOutput() {
