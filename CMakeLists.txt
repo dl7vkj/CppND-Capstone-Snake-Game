@@ -20,5 +20,5 @@ add_executable(SnakeGame
     src/renderer.cpp
     src/component.cpp
 )
-string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)
+#string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)
 target_link_libraries(SnakeGame ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})

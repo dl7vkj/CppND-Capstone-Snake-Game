@@ -134,10 +134,10 @@ endif()
 
 # MinGW needs an additional link flag, -mwindows
 # It's total link flags should look like -lmingw32 -lSDLmain -lSDL -mwindows
-if(MINGW)
-  set(MINGW32_LIBRARY  "-mwindows" CACHE STRING "link flags for MinGW")
-  message("MINGW32_LIBRARY=" ${MINGW32_LIBRARY})
-endif()
+# if(MINGW)
+#   set(MINGW32_LIBRARY  "-mwindows" CACHE STRING "link flags for MinGW")
+#   message("MINGW32_LIBRARY=" ${MINGW32_LIBRARY})
+# endif()
 
 if(SDL2_LIBRARY_TEMP)
   # For SDLmain
