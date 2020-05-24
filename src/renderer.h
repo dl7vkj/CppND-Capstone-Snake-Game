@@ -15,7 +15,8 @@
 class Renderer {
 public:
     // Render() = delete;
-    explicit Renderer(const std::size_t screen_width, const std::size_t screen_height);
+    explicit Renderer(const std::size_t screen_width,
+                      const std::size_t screen_height);
     ~Renderer();
 #if 0
   void Render(Player &player, std::list<Entity> &entities,
@@ -27,6 +28,7 @@ public:
     SDLTexture *GetTexture(std::string filename) {
         auto result = textures_.find(filename);
         if (result != textures_.end()) {
+            // Texture already exists
             SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO,
                        "Texture found %s", filename.c_str());
             return result->second.get();
@@ -34,7 +36,8 @@ public:
             // Create texture
             SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO,
                        "Create texture %s", filename.c_str());
-            textures_.emplace(filename, std::make_unique<SDLTexture>(filename, *sdl_renderer));
+            textures_.emplace(filename, std::make_unique<SDLTexture>(filename,
+                *sdl_renderer));
             return textures_[filename].get();
 
         }

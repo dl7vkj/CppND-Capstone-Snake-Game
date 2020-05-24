@@ -27,6 +27,8 @@ public:
     }
     void ProcessInput(const uint8_t *keyboard_state) override {
         Actor::ProcessInput(keyboard_state);
+        moveComp->velocity.x = 0.0f;
+        moveComp->velocity.y = 0.0f;
         if (keyboard_state[SDL_SCANCODE_UP]) {
             moveComp->velocity.y = -4.0f;
         }

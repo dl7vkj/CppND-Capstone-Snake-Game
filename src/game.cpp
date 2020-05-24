@@ -131,9 +131,15 @@ void Game::ProcessInput() {
         }
     }
     const uint8_t *keyboardState = SDL_GetKeyboardState(NULL);
+    for (auto &actor: actors_) {
+        actor->ProcessInput(keyboardState);
+    }
 }
 
 void Game::UpdateGame() {
+    for (auto &actor: actors_) {
+        actor->Update();
+    }
 }
 
 void Game::GenerateOutput() {
