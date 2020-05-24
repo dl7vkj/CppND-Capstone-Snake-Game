@@ -34,9 +34,9 @@ public:
             // Create texture
             SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO,
                        "Create texture %s", filename.c_str());
-            std::unique_ptr<SDLTexture> texture = std::make_unique<SDLTexture>(filename, *sdl_renderer);
-            textures_.emplace(filename, std::move(texture));
-            return texture.get();
+            textures_.emplace(filename, std::make_unique<SDLTexture>(filename, *sdl_renderer));
+            return textures_[filename].get();
+
         }
     }
 
