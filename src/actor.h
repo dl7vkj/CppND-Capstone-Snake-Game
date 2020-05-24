@@ -17,7 +17,7 @@ public:
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO,
                        "Actor destructor");
     }
-    void ProcessInput(const uint8_t &keyboard_state) override {
+    void ProcessInput(const uint8_t *keyboard_state) override {
         for (auto comp: components_) {
             comp->ProcessInput(keyboard_state);
         }
@@ -29,7 +29,7 @@ public:
     }
     void Draw() override {};
     SDL_FPoint &GetPosition() override { return position_; }
-    void SetPosition(SDL_FPoint &position) override { position_ = position; }
+    void SetPosition(SDL_FPoint &&position) override { position_ = position; }
     void AddComponent(Component *component) override {
         components_.push_back(component);
     }

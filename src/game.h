@@ -11,6 +11,7 @@
 #include "renderer.h"
 #include "player.h"
 #include "entity.h"
+#include "actor.h"
 
 
 class Game {
@@ -29,11 +30,12 @@ private:
     void UpdateGame();
     void GenerateOutput();
 
-    // Renderer &renderer_;
+    // Renderer renderer_;
     std::unique_ptr<Renderer> renderer_;
     // std::unique_ptr<Controller> controller_;
 
     // TODO: flyweight pattern
+#if 0
     std::unique_ptr<SDLTexture> player_texture_;
     std::unique_ptr<SDLTexture> bullet_texture_;
     std::unique_ptr<SDLTexture> enemy_texture_;
@@ -41,11 +43,14 @@ private:
     std::unique_ptr<Player> player_;
     std::list<Entity> entities_;
     std::list<Entity> enemies_;
+#endif
+    std::vector<std::unique_ptr<Actor>> actors_;
+#if 0
     int enemySpawnTimer_{0};
-
+#endif
     // SDL_Point food;
     bool running_;
-
+#if 0
     std::random_device dev_;
     std::mt19937 eng_;
     std::uniform_int_distribution<int> random_y_;
@@ -64,6 +69,7 @@ private:
     void FireAlienBullet(Entity &e);
     void FireBullet();
     void SpawnEnemies();
+#endif
 };
 
 #endif

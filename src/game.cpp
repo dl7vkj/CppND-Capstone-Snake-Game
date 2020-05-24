@@ -13,9 +13,10 @@
 // #include "SDL_ttf.h"
 
 #include "actor.h"
+#include "player.h"
 #include "move_component.h"
 
-
+#if 0
 Game::Game()
   : running_(true),
     eng_(dev_()),
@@ -30,6 +31,7 @@ Game::Game()
     // Create the controller
     // controller_ = std::make_unique<Controller>();
     // Create textures
+
     player_texture_ = std::make_unique<SDLTexture>(
         Config::kPlayerImage, renderer_->GetSDLRenderer());
     bullet_texture_ = std::make_unique<SDLTexture>(
@@ -45,6 +47,14 @@ Game::Game()
 
     // ticksCount_ = SDL_GetTicks();
 }
+#endif
+
+Game::Game()
+  : running_(true)
+{
+    // Create the renderer
+    renderer_ = std::make_unique<Renderer>(Config::kScreenWidth, Config::kScreenHeight);
+}
 
 void Game::Run()
 {
@@ -55,14 +65,22 @@ void Game::Run()
     Uint32 frame_duration;
     int frame_count = 0;
 
+#if 0
     player_->SetPosition(100, 100);
     player_->side = Entity::Side::kPlayer;
     player_->health = 2;
+#endif
 
-    Actor *actor = new Actor(*this);
-    std::shared_ptr<MoveComponent> mvCmp = std::make_shared<MoveComponent>(*actor);
-    // actor.AddComponent(mvCmp.get());
-    delete actor;
+
+    // Create the player
+    std::unique_ptr<Player> player = std::make_unique<Player>(*this);
+    player->SetPosition({100.0f,100.0f});
+    std::unique_ptr<MoveComponent> mvCmp = std::make_unique<MoveComponent>(*player);
+    std::unique_ptr<TextureComponent> texCmp = std::make_unique<TextureComponent>(*player);
+    texCmp->SetTexture(renderer_->GetTexture(Config::kPlayerImage));
+    renderer_->AddTextureComponent(texCmp.get());
+    actors_.emplace_back(std::move(player));
+
 
     while (running_) {
         frame_start = SDL_GetTicks();
@@ -115,6 +133,14 @@ void Game::ProcessInput() {
     const uint8_t *keyboardState = SDL_GetKeyboardState(NULL);
 }
 
+void Game::UpdateGame() {
+}
+
+void Game::GenerateOutput() {
+    renderer_->Render();
+}
+
+#if 0
 void Game::UpdateGame() {
 
     if (player_->health <= 0) {
@@ -250,3 +276,4 @@ void Game::SpawnEnemies() {
         enemySpawnTimer_ = random_timer_(eng_);
     }
 }
+#endif

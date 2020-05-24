@@ -1,6 +1,54 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include <memory>
+
+#include "SDL_scancode.h"
+
+#include "actor.h"
+#include "move_component.h"
+//     if (event.repeat == 0) {
+// 		if (event.keysym.scancode == SDL_SCANCODE_UP) {
+// 			player.up = true;
+// 		} else if (event.keysym.scancode == SDL_SCANCODE_DOWN) {
+// 			player.down = true;
+// 		} else if (event.keysym.scancode == SDL_SCANCODE_LEFT) {
+// 			player.left = true;
+// 		} else if (event.keysym.scancode == SDL_SCANCODE_RIGHT) {
+// 			player.right = true;
+// 		} else if (event.keysym.scancode == SDL_SCANCODE_LCTRL) {
+//             player.fire = true;
+//         }
+// 	}
+class Player : public Actor {
+public:
+    Player(Game &game) : Actor(game) {
+        moveComp = std::make_unique<MoveComponent>(*this);
+    }
+    void ProcessInput(const uint8_t *keyboard_state) override {
+        Actor::ProcessInput(keyboard_state);
+        if (keyboard_state[SDL_SCANCODE_UP]) {
+            moveComp->velocity.y = -4.0f;
+        }
+        if (keyboard_state[SDL_SCANCODE_DOWN]) {
+            moveComp->velocity.y = 4.0f;
+        }
+        if (keyboard_state[SDL_SCANCODE_LEFT]) {
+            moveComp->velocity.x = -4.0f;
+        }
+        if (keyboard_state[SDL_SCANCODE_RIGHT]) {
+            moveComp->velocity.x = 4.0f;
+        }
+        if (keyboard_state[SDL_SCANCODE_LCTRL]) {
+            // TODO: Fire
+        }
+    }
+private:
+    std::unique_ptr<MoveComponent> moveComp;
+};
+
+
+#if 0
 #include <cstdint>
 #include <iostream>
 #include <list>
@@ -69,6 +117,6 @@ private:
     // int maxX_;
     // int maxY_;
 };
-
+#endif
 
 #endif // PLAYER_H
