@@ -78,15 +78,18 @@ void Game::Run()
     std::unique_ptr<Player> player = std::make_unique<Player>(*this);
     SDL_FPoint start_pos{100.0f, 100.0f};
     player->SetPosition(start_pos);
+
     // Create/Add move component
     MoveComponent mvCmp;
     player->AddComponent(&mvCmp);
+
     // Create/Add texture component
     TextureComponent texCmp;
     SDLTexture *texture = renderer_->GetTexture(Config::kPlayerImage);
     texCmp.SetTexture(texture);
     renderer_->AddTextureComponent(&texCmp);
     player->AddComponent(&texCmp);
+
     // Create/Add fence component
     // TODO: Nicht hier so kompliziert berechnen
     SDL_Rect rect{0, 0, 0, 0};

@@ -18,6 +18,8 @@ public:
                        "Actor destructor");
     }
     void ProcessInput(const uint8_t *keyboard_state) override {
+        if (nullptr == keyboard_state)
+            return;
         for (auto comp: components_) {
             comp->ProcessInput(keyboard_state);
         }
@@ -28,14 +30,19 @@ public:
         }
     }
     void Draw() override {};
+
     SDL_FPoint &GetPosition() override { return position; }
     void SetPosition(SDL_FPoint position) override { this->position = position; }
 
     void AddComponent(Component *component) override {
+        if (nullptr == component)
+            return;
         component->SetOwner(this);
         components_.push_back(component);
     }
     void RemoveComponent(Component *component) override {
+        if (nullptr == component)
+            return;
         auto result = std::find(components_.begin(), components_.end(), component);
         if (result != components_.end()) {
             components_.erase(result);
@@ -46,8 +53,6 @@ public:
 protected:
     Game &game;
     SDL_FPoint position{0.0f, 0.0f};
-    // SDL_Rect boundary{0, 0, 0, 0};
-    // bool hasBoundary{false};
     std::vector<Component*> components_{};
 };
 
