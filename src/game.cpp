@@ -12,6 +12,8 @@
 #include "sdl_texture.h"
 // #include "SDL_ttf.h"
 
+#include "actor.h"
+#include "move_component.h"
 
 
 Game::Game()
@@ -57,6 +59,10 @@ void Game::Run()
     player_->side = Entity::Side::kPlayer;
     player_->health = 2;
 
+    Actor *actor = new Actor(*this);
+    std::shared_ptr<MoveComponent> mvCmp = std::make_shared<MoveComponent>(*actor);
+    // actor.AddComponent(mvCmp.get());
+    delete actor;
 
     while (running_) {
         frame_start = SDL_GetTicks();

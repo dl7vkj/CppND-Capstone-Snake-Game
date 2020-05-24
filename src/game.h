@@ -20,6 +20,7 @@ public:
     //         std::size_t target_frame_duration);
     Game();
     void Run();
+    Renderer &GetRenderer() { return *renderer_.get(); }
     // int GetScore() const;
     // int GetSize() const;
 
