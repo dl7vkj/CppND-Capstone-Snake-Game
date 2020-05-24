@@ -19,8 +19,15 @@ public:
         if (nullptr != texture_)
             texture_->Blit(pos.x, pos.y);
     }
+    // SDL_Point GetSize() {
+    //     SDL_Point size{0,0};
+    //     if (nullptr != texture_) {
+    //         size.x = texture_->GetWidth();
+    //         size.y = texture_->GetHeight();
+    //     }
+    // }
 private:
-    SDLTexture *texture_;
+    SDLTexture *texture_{nullptr};
 };
 
 

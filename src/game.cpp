@@ -15,6 +15,8 @@
 #include "actor.h"
 #include "player.h"
 #include "move_component.h"
+#include "texture_component.h"
+#include "fence_component.h"
 
 #if 0
 Game::Game()
@@ -75,10 +77,22 @@ void Game::Run()
     // Create the player
     std::unique_ptr<Player> player = std::make_unique<Player>(*this);
     player->SetPosition({100.0f,100.0f});
-    std::unique_ptr<MoveComponent> mvCmp = std::make_unique<MoveComponent>(*player);
-    std::unique_ptr<TextureComponent> texCmp = std::make_unique<TextureComponent>(*player);
-    texCmp->SetTexture(renderer_->GetTexture(Config::kPlayerImage));
-    renderer_->AddTextureComponent(texCmp.get());
+    // Create/Add move component
+    MoveComponent mvCmp(*player);
+    // Create/Add texture component
+    TextureComponent texCmp(*player);
+    SDLTexture *texture = renderer_->GetTexture(Config::kPlayerImage);
+    texCmp.SetTexture(texture);
+    renderer_->AddTextureComponent(&texCmp);
+    // Create/Add fence component
+    // TODO: Nicht hier so kompliziert berechnen
+    SDL_Rect rect{0, 0, 0, 0};
+    rect.w = renderer_->GetScreenWidth();
+    rect.h = renderer_->GetScreenHeight();
+    rect.w -= texture->GetWidth();
+    rect.h -= texture->GetHeight();
+    FenceComponent fence(*player);
+    fence.fence = rect;
     actors_.emplace_back(std::move(player));
 
 
