@@ -29,19 +29,17 @@ public:
     }
     void Draw() override {};
     SDL_FPoint &GetPosition() override { return position; }
-    void SetPosition(SDL_FPoint &&position) override { position = position; }
-    // virtual void SetBoundary(SDL_Rect &&boundary) {
-    //     Actor::boundary = boundary;
-    //     hasBoundary = true;
-    // };
-    // virtual void DisableBoundary() { hasBoundary = false; }
+    void SetPosition(SDL_FPoint position) override { this->position = position; }
+
     void AddComponent(Component *component) override {
+        component->SetOwner(this);
         components_.push_back(component);
     }
     void RemoveComponent(Component *component) override {
         auto result = std::find(components_.begin(), components_.end(), component);
         if (result != components_.end()) {
             components_.erase(result);
+            component->SetOwner(nullptr);
         }
     }
 

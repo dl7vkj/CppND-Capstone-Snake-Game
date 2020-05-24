@@ -9,9 +9,11 @@
 
 class MoveComponent : public Component {
 public:
-    MoveComponent(GameObject &game_object) : Component(game_object) {}
+    // MoveComponent(GameObject &game_object) : Component(game_object) {}
     void Update() override {
-        SDL_FPoint &pos = owner.GetPosition();
+        if (nullptr == owner)
+            return;
+        SDL_FPoint &pos = owner->GetPosition();
         pos.x += velocity.x;
         pos.y += velocity.y;
     };

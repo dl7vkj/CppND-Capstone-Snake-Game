@@ -10,22 +10,17 @@
 
 class TextureComponent : public Component {
 public:
-    TextureComponent(GameObject &game_object) : Component(game_object), texture_(nullptr) {}
+    // TextureComponent(GameObject &game_object) : Component(game_object), texture_(nullptr) {}
     void SetTexture(SDLTexture *texture) {
         texture_ = texture;
     }
     void Draw() {
-        const SDL_FPoint &pos = owner.GetPosition();
+        if (nullptr == owner)
+            return;
+        const SDL_FPoint &pos = owner->GetPosition();
         if (nullptr != texture_)
             texture_->Blit(pos.x, pos.y);
     }
-    // SDL_Point GetSize() {
-    //     SDL_Point size{0,0};
-    //     if (nullptr != texture_) {
-    //         size.x = texture_->GetWidth();
-    //         size.y = texture_->GetHeight();
-    //     }
-    // }
 private:
     SDLTexture *texture_{nullptr};
 };

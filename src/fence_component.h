@@ -9,9 +9,12 @@
 
 class FenceComponent : public Component {
 public:
-    FenceComponent(GameObject &game_object) : Component(game_object) {}
+    // FenceComponent(GameObject &game_object) : Component(game_object) {}
+    explicit FenceComponent(SDL_Rect fence) : fence(fence) {}
     void Update() override {
-        SDL_FPoint &pos = owner.GetPosition();
+        if (nullptr == owner)
+            return;
+        SDL_FPoint &pos = owner->GetPosition();
         pos.x = pos.x < fence.x ? fence.x : pos.x > fence.x + fence.w ? fence.x + fence.w : pos.x;
         pos.y = pos.y < fence.y ? fence.y : pos.y > fence.y + fence.h ? fence.y + fence.h : pos.y;
     };

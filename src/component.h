@@ -7,12 +7,13 @@ class GameObject;
 
 class Component {
 public:
-    Component(GameObject &game_object);
-    virtual ~Component();
+    // Component();
+    virtual ~Component() {}
     virtual void Update() {};
+    virtual void SetOwner(GameObject *owner) { this->owner = owner; }
     virtual void ProcessInput(const uint8_t *keyboard_state) {}
 protected:
-    GameObject &owner;
+    GameObject *owner{nullptr};
 };
 
 

@@ -23,30 +23,30 @@
 class Player : public Actor {
 public:
     Player(Game &game) : Actor(game) {
-        moveComp = std::make_unique<MoveComponent>(*this);
+        AddComponent(&moveComp_);
     }
     void ProcessInput(const uint8_t *keyboard_state) override {
         Actor::ProcessInput(keyboard_state);
-        moveComp->velocity.x = 0.0f;
-        moveComp->velocity.y = 0.0f;
+        moveComp_.velocity.x = 0.0f;
+        moveComp_.velocity.y = 0.0f;
         if (keyboard_state[SDL_SCANCODE_UP]) {
-            moveComp->velocity.y = -4.0f;
+            moveComp_.velocity.y = -4.0f;
         }
         if (keyboard_state[SDL_SCANCODE_DOWN]) {
-            moveComp->velocity.y = 4.0f;
+            moveComp_.velocity.y = 4.0f;
         }
         if (keyboard_state[SDL_SCANCODE_LEFT]) {
-            moveComp->velocity.x = -4.0f;
+            moveComp_.velocity.x = -4.0f;
         }
         if (keyboard_state[SDL_SCANCODE_RIGHT]) {
-            moveComp->velocity.x = 4.0f;
+            moveComp_.velocity.x = 4.0f;
         }
         if (keyboard_state[SDL_SCANCODE_LCTRL]) {
             // TODO: Fire
         }
     }
 private:
-    std::unique_ptr<MoveComponent> moveComp;
+    MoveComponent moveComp_;
 };
 
 
