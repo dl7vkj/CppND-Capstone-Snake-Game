@@ -22,7 +22,7 @@
 // 	}
 class Player : public Actor {
 public:
-    Player(Game &game) : Actor(game) {
+    Player(Game *game) : Actor(game), moveComp_(this) {
         AddComponent(&moveComp_);
     }
     void ProcessInput(const uint8_t *keyboard_state) override {

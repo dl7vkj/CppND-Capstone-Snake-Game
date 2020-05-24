@@ -12,7 +12,7 @@
 
 class Actor : public GameObject {
 public:
-    Actor(Game &game) : game(game) {}
+    Actor(Game *game) : game(game) {}
     virtual ~Actor() {
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO,
                        "Actor destructor");
@@ -31,13 +31,14 @@ public:
     }
     void Draw() override {};
 
+    Game *GetGame() override { return game; };
+
     SDL_FPoint &GetPosition() override { return position; }
     void SetPosition(SDL_FPoint position) override { this->position = position; }
 
     void AddComponent(Component *component) override {
         if (nullptr == component)
             return;
-        component->SetOwner(this);
         components_.push_back(component);
     }
     void RemoveComponent(Component *component) override {
@@ -46,12 +47,12 @@ public:
         auto result = std::find(components_.begin(), components_.end(), component);
         if (result != components_.end()) {
             components_.erase(result);
-            component->SetOwner(nullptr);
+            // component->owner = nullptr;
         }
     }
 
 protected:
-    Game &game;
+    Game *game;
     SDL_FPoint position{0.0f, 0.0f};
     std::vector<Component*> components_{};
 };

@@ -10,16 +10,16 @@
 
 class TextureComponent : public Component {
 public:
-    // TextureComponent(GameObject &game_object) : Component(game_object), texture_(nullptr) {}
+    TextureComponent(GameObject *game_object, SDLTexture *texture);
+    ~TextureComponent();
     void SetTexture(SDLTexture *texture) {
         texture_ = texture;
     }
     void Draw() {
-        if (nullptr == owner)
+        if (nullptr == owner || nullptr == texture_)
             return;
         const SDL_FPoint &pos = owner->GetPosition();
-        if (nullptr != texture_)
-            texture_->Blit(pos.x, pos.y);
+        texture_->Blit(pos.x, pos.y);
     }
 private:
     SDLTexture *texture_{nullptr};

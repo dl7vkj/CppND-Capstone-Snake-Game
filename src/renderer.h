@@ -47,6 +47,16 @@ public:
         textureComponents_.push_back(texture_component);
     }
 
+    void RemoveTextureComponent(TextureComponent *texture_component) {
+        if (nullptr == texture_component)
+            return;
+        auto result = std::find(textureComponents_.begin(),
+            textureComponents_.end(), texture_component);
+        if (result != textureComponents_.end()) {
+            textureComponents_.erase(result);
+        }
+    }
+
     std::size_t GetScreenWidth() const { return screenWidth_; }
     std::size_t GetScreenHeight() const { return screenHeight_; }
     SDL_Renderer &GetSDLRenderer() { return *sdl_renderer; }

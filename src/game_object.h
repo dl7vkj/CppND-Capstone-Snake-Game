@@ -22,6 +22,7 @@ public:
     virtual void SetPosition(SDL_FPoint position) = 0;
     virtual void AddComponent(Component *component) = 0;
     virtual void RemoveComponent(Component *component) = 0;
+    virtual Game *GetGame() = 0;
 };
 
 #endif // GAME_OBJECT_H

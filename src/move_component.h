@@ -9,7 +9,7 @@
 
 class MoveComponent : public Component {
 public:
-    // MoveComponent(GameObject &game_object) : Component(game_object) {}
+    MoveComponent(GameObject *game_object) : Component(game_object) {}
     void Update() override {
         if (nullptr == owner)
             return;

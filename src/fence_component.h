@@ -9,8 +9,7 @@
 
 class FenceComponent : public Component {
 public:
-    // FenceComponent(GameObject &game_object) : Component(game_object) {}
-    explicit FenceComponent(SDL_Rect fence) : fence(fence) {}
+    FenceComponent(GameObject *game_object) : Component(game_object) {}
     void Update() override {
         if (nullptr == owner)
             return;

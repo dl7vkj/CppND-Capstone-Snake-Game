@@ -75,20 +75,25 @@ void Game::Run()
 
 
     // Create the player
-    std::unique_ptr<Player> player = std::make_unique<Player>(*this);
+    std::unique_ptr<Player> player = std::make_unique<Player>(this);
     SDL_FPoint start_pos{100.0f, 100.0f};
     player->SetPosition(start_pos);
 
     // Create/Add move component
-    MoveComponent mvCmp;
-    player->AddComponent(&mvCmp);
+    MoveComponent mvCmp(player.get());
+    // player->AddComponent(&mvCmp);
 
     // Create/Add texture component
-    TextureComponent texCmp;
     SDLTexture *texture = renderer_->GetTexture(Config::kPlayerImage);
-    texCmp.SetTexture(texture);
-    renderer_->AddTextureComponent(&texCmp);
-    player->AddComponent(&texCmp);
+    if (nullptr == texture) {
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR,
+                       "Can't get texture!");
+        return;
+    }
+    TextureComponent texCmp(player.get(), texture);
+    // texCmp.SetTexture(texture);
+    // renderer_->AddTextureComponent(&texCmp);
+    // player->AddComponent(&texCmp);
 
     // Create/Add fence component
     // TODO: Nicht hier so kompliziert berechnen
@@ -97,8 +102,9 @@ void Game::Run()
     rect.h = renderer_->GetScreenHeight();
     rect.w -= texture->GetWidth();
     rect.h -= texture->GetHeight();
-    FenceComponent fence(rect);
-    player->AddComponent(&fence);
+    FenceComponent fence((player.get()));
+    fence.fence = rect;
+    // player->AddComponent(&fence);
     actors_.emplace_back(std::move(player));
 
 
