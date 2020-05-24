@@ -22,31 +22,33 @@
 // 	}
 class Player : public Actor {
 public:
-    Player(Game *game) : Actor(game), moveComp_(this) {
-        AddComponent(&moveComp_);
-    }
+    Player(Game *game);
+
     void ProcessInput(const uint8_t *keyboard_state) override {
         Actor::ProcessInput(keyboard_state);
-        moveComp_.velocity.x = 0.0f;
-        moveComp_.velocity.y = 0.0f;
+        moveComp_->velocity.x = 0.0f;
+        moveComp_->velocity.y = 0.0f;
         if (keyboard_state[SDL_SCANCODE_UP]) {
-            moveComp_.velocity.y = -4.0f;
+            moveComp_->velocity.y = -4.0f;
         }
         if (keyboard_state[SDL_SCANCODE_DOWN]) {
-            moveComp_.velocity.y = 4.0f;
+            moveComp_->velocity.y = 4.0f;
         }
         if (keyboard_state[SDL_SCANCODE_LEFT]) {
-            moveComp_.velocity.x = -4.0f;
+            moveComp_->velocity.x = -4.0f;
         }
         if (keyboard_state[SDL_SCANCODE_RIGHT]) {
-            moveComp_.velocity.x = 4.0f;
+            moveComp_->velocity.x = 4.0f;
         }
         if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-            // TODO: Fire
+            FireBullet();
         }
     }
+
+    void FireBullet();
+
 private:
-    MoveComponent moveComp_;
+    MoveComponent *moveComp_{nullptr};
 };
 
 

@@ -22,6 +22,10 @@ public:
     Game();
     void Run();
     Renderer *GetRenderer() { return renderer_.get(); }
+    void AddActor(std::unique_ptr<Actor> actor) {
+        actors_.emplace_back(std::move(actor));
+    }
+    void RemoveActor() {}
     // int GetScore() const;
     // int GetSize() const;
 
@@ -32,6 +36,7 @@ private:
 
     // Renderer renderer_;
     std::unique_ptr<Renderer> renderer_;
+    std::vector<std::unique_ptr<Actor>> actors_;
     // std::unique_ptr<Controller> controller_;
 
     // TODO: flyweight pattern
@@ -44,7 +49,6 @@ private:
     std::list<Entity> entities_;
     std::list<Entity> enemies_;
 #endif
-    std::vector<std::unique_ptr<Actor>> actors_;
 #if 0
     int enemySpawnTimer_{0};
 #endif

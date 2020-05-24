@@ -6,7 +6,7 @@
 Component::Component(GameObject *game_object) : owner(game_object) {
     SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO,
                        "Adding component to owner");
-    owner->AddComponent(this);
+    // owner->AddComponent(this);
 }
 
 Component::~Component() {
@@ -17,5 +17,5 @@ Component::~Component() {
                        "owner points to nullptr!");
         return;
     }
-    owner->RemoveComponent(this);
+    // owner->RemoveComponent(this);
 }

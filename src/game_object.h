@@ -20,8 +20,8 @@ public:
     virtual void Draw() = 0;
     virtual SDL_FPoint &GetPosition() = 0;
     virtual void SetPosition(SDL_FPoint position) = 0;
-    virtual void AddComponent(Component *component) = 0;
-    virtual void RemoveComponent(Component *component) = 0;
+    // virtual void AddComponent(Component *component) = 0;
+    // virtual void RemoveComponent(Component *component) = 0;
     virtual Game *GetGame() = 0;
 };
 
