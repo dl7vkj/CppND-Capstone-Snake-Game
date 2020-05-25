@@ -22,7 +22,7 @@ public:
         texture_->Blit(pos.x, pos.y);
     }
 private:
-    SDLTexture *texture_{nullptr};
+    SDLTexture *texture_;
 };
 
 
