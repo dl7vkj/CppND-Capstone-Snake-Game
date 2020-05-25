@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-// #include <memory>
+#include <cstdint>
 
 #include "SDL_scancode.h"
 
@@ -19,6 +19,8 @@ public:
 
 private:
     MoveComponent *moveComp_{nullptr};
+    const uint8_t kReloadTime{8};
+    int8_t reloadTime_;
 };
 
 

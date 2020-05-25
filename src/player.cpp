@@ -58,7 +58,10 @@ void Player::ProcessInput(const uint8_t *keyboard_state) {
             moveComp_->velocity.x = 4.0f;
         }
         if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-            FireBullet();
+            if (--reloadTime_ <= 0) {
+                FireBullet();
+                reloadTime_ = kReloadTime;
+            }
         }
     }
 
