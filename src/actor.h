@@ -13,6 +13,8 @@
 
 class Actor : public GameObject {
 public:
+    enum Side{ kPlayer, kAlien, kNeutral};
+
     Actor(Game *game) : game(game) {}
 
     virtual ~Actor() {
@@ -65,6 +67,8 @@ public:
     //     }
     // }
     bool isAlive{true};
+    Side side{Side::kNeutral};
+
 
 protected:
     Game *game;

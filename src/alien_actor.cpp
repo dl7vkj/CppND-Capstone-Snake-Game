@@ -43,9 +43,11 @@ AlienActor::AlienActor(Game *game) : Actor(game) {
 
 void AlienActor::Update() {
     Actor::Update();
+    // Alien leave playground...
     if (position.x < -size.x) {
         isAlive = false;
     }
+    // Alien bounce off
     if (position.y <= 0) {
         moveComp_->velocity.y = fabs(moveComp_->velocity.y);
     } else if (position.y >= screenHeight_ - size.y) {
