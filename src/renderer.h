@@ -23,7 +23,7 @@ public:
               std::list<Entity> &enemies);
 #endif
     void Render();
-    void UpdateWindowTitle(int fps);
+    void UpdateWindowTitle(int health, int score, int life, int fps);
 
     SDLTexture *GetTexture(std::string filename) {
         auto result = textures_.find(filename);

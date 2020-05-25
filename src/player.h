@@ -14,6 +14,7 @@ public:
     Player(Game *game);
 
     void ProcessInput(const uint8_t *keyboard_state) override;
+    // bool IsAlive() override { return true; }
 
     void FireBullet();
 

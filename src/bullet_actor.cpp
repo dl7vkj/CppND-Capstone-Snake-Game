@@ -37,6 +37,9 @@ BulletActor::BulletActor(Game *game, Side side)
 
 void BulletActor::Update() {
     Actor::Update();
+    if (health <= 0) {
+        isAlive = false;
+    }
     if (position.x > screenWidth_) {
         isAlive = false;
     } else if (position.x < 0.0f) {

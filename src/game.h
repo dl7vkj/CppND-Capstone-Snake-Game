@@ -17,11 +17,14 @@
 
 class Game {
 public:
+    enum State{kPlay, kRespawn, kPause};
     // Game(Renderer &renderer);
     // void Run(Controller &controller,
     //         std::size_t target_frame_duration);
     Game();
+
     void Run();
+
     Renderer *GetRenderer() { return renderer_.get(); }
     void AddActor(std::unique_ptr<Actor> actor) {
         pendingActors_.emplace_back(std::move(actor));
@@ -35,6 +38,8 @@ public:
     // int GetSize() const;
 
 private:
+    static constexpr int kRespawnTime{180};
+
     void Input();
     void Update();
     void Output();
@@ -48,9 +53,13 @@ private:
     std::vector<std::unique_ptr<BulletActor>> bullets_{};
     std::vector<std::unique_ptr<BulletActor>> pendingBullets_{};
 
+    int alienSpawnTimer_{60};
+    bool running_{true};
+    int life_{4};
+    int score_{0};
+    int respawnTimer_{kRespawnTime};
+    State state_{kPlay};
 
-    int alienSpawnTimer_{120};
-    bool running_;
     std::random_device dev_;
     std::mt19937 eng_;
     std::uniform_int_distribution<int> random_y_;

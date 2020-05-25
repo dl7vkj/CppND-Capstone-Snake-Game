@@ -53,8 +53,7 @@ Game::Game()
 #endif
 
 Game::Game()
-  : running_(true),
-    eng_(dev_()),
+  : eng_(dev_()),
     random_y_(0, Config::kScreenHeight),
     random_dx_(-5.0f, -2.0f),
     random_dy_(-2.0f, +2.0f),
@@ -69,6 +68,7 @@ Game::Game()
     auto player = std::make_unique<Player>(this);
     SDL_FPoint start_pos{100.0f, 100.0f};
     player->SetPosition(start_pos);
+    player->health = 10;
     AddActor(std::move(player));
 }
 
@@ -104,7 +104,7 @@ void Game::Run()
         // TODO: Move to output
         // After every second, update the window title.
         if (frame_end - title_timestamp >= 1000) {
-            renderer_->UpdateWindowTitle(frame_count);
+            renderer_->UpdateWindowTitle(actors_[0]->health, score_, life_, frame_count);
             frame_count = 0;
             title_timestamp = frame_end;
         }
@@ -137,38 +137,61 @@ void Game::Input() {
 }
 
 void Game::Update() {
-    for (auto &actor: actors_) {
-        actor->Update();
+    if (state_ == kPlay) {
+
+        for (auto &actor: actors_) {
+            actor->Update();
+        }
+
+        for (auto &bullet: bullets_) {
+            bullet->Update();
+            DetectBulletCollision(bullet.get());
+        }
+
+        if (life_ < 0) {
+            state_ = kPause;
+            actors_.erase(actors_.begin()+1, actors_.end());
+            bullets_.erase(bullets_.begin(), bullets_.end());
+            return;
+        } else if (actors_[0]->health <= 0) {
+            state_ = kRespawn;
+            actors_.erase(actors_.begin()+1, actors_.end());
+            bullets_.erase(bullets_.begin(), bullets_.end());
+            return;
+        }
+
+        SpawnAliens();
+
+        // Add pending actors
+        std::reverse(pendingActors_.begin(), pendingActors_.end());
+        while (pendingActors_.empty() == false) {
+            actors_.emplace_back(std::move(pendingActors_.back()));
+            pendingActors_.pop_back();
+        }
+
+        // Add pending bullets
+        std::reverse(pendingBullets_.begin(), pendingBullets_.end());
+        while (pendingBullets_.empty() == false) {
+            bullets_.emplace_back(std::move(pendingBullets_.back()));
+            pendingBullets_.pop_back();
+        }
+
+        // Remove died actors, [0] is our player so don't remove him
+        actors_.erase(std::remove_if(actors_.begin()+1, actors_.end(),
+            [](auto const &a){ return a->isAlive == false; }), actors_.end());
+
+        // Remove hitting bullets
+        bullets_.erase(std::remove_if(bullets_.begin(), bullets_.end(),
+            [](auto const &a){ return a->isAlive == false; }), bullets_.end());
+    } else if (state_ == kRespawn) {
+        if (--respawnTimer_ <= 0){
+            state_ == kPlay;
+            respawnTimer_ = kRespawnTime;
+            Player *player = static_cast<Player*>(actors_[0].get());
+            player->isAlive = true;
+            player->health = 10;
+        }
     }
-
-    for (auto &bullet: bullets_) {
-        bullet->Update();
-        DetectBulletCollision(bullet.get());
-    }
-
-    SpawnAliens();
-
-    // Add pending actors
-    std::reverse(pendingActors_.begin(), pendingActors_.end());
-    while (pendingActors_.empty() == false) {
-        actors_.emplace_back(std::move(pendingActors_.back()));
-        pendingActors_.pop_back();
-    }
-
-    // Add pending bullets
-    std::reverse(pendingBullets_.begin(), pendingBullets_.end());
-    while (pendingBullets_.empty() == false) {
-        bullets_.emplace_back(std::move(pendingBullets_.back()));
-        pendingBullets_.pop_back();
-    }
-
-    // Remove died actors, [0] is our player so don't remove him
-    actors_.erase(std::remove_if(actors_.begin()+1, actors_.end(),
-        [](auto const &a){ return a->isAlive == false; }), actors_.end());
-
-    // Remove hitting bullets
-    bullets_.erase(std::remove_if(bullets_.begin(), bullets_.end(),
-        [](auto const &a){ return a->isAlive == false; }), bullets_.end());
 }
 
 void Game::Output() {
@@ -201,12 +224,15 @@ void Game::SpawnAliens() {
 
 void Game::DetectBulletCollision(BulletActor *bullet) {
     for (auto &actor: actors_) {
-        if (bullet->side != actor->side) {
+        if (bullet->health > 0 && bullet->side != actor->side) {
             SDL_Rect a{actor->GetRect()};
             SDL_Rect b{bullet->GetRect()};
             if (SDL_HasIntersection(&a, &b)) {
-                actor->isAlive = false;
-                bullet->isAlive = false;
+                actor->health--;
+                bullet->health--;
+                if (actor->side == Actor::Side::kAlien) {
+                    score_++;
+                }
             }
         }
     }

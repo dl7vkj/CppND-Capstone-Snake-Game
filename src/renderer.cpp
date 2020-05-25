@@ -1,6 +1,7 @@
 #include "renderer.h"
 #include <iostream>
 #include <string>
+#include <sstream>
 
 #include "SDL_image.h"
 
@@ -74,8 +75,11 @@ void Renderer::Render(Player &player, std::list<Entity> &entities,
 }
 #endif
 
-void Renderer::UpdateWindowTitle(int fps)
+// TODO: Update HUD
+void Renderer::UpdateWindowTitle(int health, int score, int life, int fps)
 {
-    std::string title{"FPS: " + std::to_string(fps)};
-    SDL_SetWindowTitle(sdl_window, title.c_str());
+    std::ostringstream stream;
+    stream << "[ Health: " << health << " | Score: " << score << " | Life: " << life << " | FPS: " << fps << " ]";
+    // std::string title{"FPS: " + std::to_string(fps)};
+    SDL_SetWindowTitle(sdl_window, stream.str().c_str());
 }

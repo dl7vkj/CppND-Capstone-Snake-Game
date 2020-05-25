@@ -46,6 +46,11 @@ AlienActor::AlienActor(Game *game)
 
 void AlienActor::Update() {
     Actor::Update();
+    // Alien killed
+    if (health <= 0) {
+        isAlive = false;
+        return;
+    }
     // Alien leave playground...
     if (position.x < -size.x) {
         isAlive = false;

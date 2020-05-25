@@ -59,6 +59,8 @@ public:
     }
     SDL_Point GetSize() { return size; }
 
+    // virtual bool IsAlive() { return isAlive; }
+
     // void AddComponent(Component *component) override {
     //     if (nullptr == component)
     //         return;
@@ -74,8 +76,9 @@ public:
     //         // component->owner = nullptr;
     //     }
     // }
-    bool isAlive{true};
     Side side{Side::kNeutral};
+    int health{1};
+    bool isAlive{true};
 
 
 protected:
