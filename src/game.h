@@ -39,6 +39,8 @@ public:
 
 private:
     static constexpr int kRespawnTime{180};
+    static constexpr int kRemainingLives{2};
+    static constexpr int kPlayerHealth{3};
 
     void Input();
     void Update();
@@ -55,7 +57,7 @@ private:
 
     int alienSpawnTimer_{60};
     bool running_{true};
-    int life_{4};
+    int remainingLives_{kRemainingLives};
     int score_{0};
     int respawnTimer_{kRespawnTime};
     State state_{kPlay};

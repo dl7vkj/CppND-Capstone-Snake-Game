@@ -68,7 +68,8 @@ Game::Game()
     auto player = std::make_unique<Player>(this);
     SDL_FPoint start_pos{100.0f, 100.0f};
     player->SetPosition(start_pos);
-    player->health = 10;
+    player->health = kPlayerHealth;
+    // player_ = player.get();
     AddActor(std::move(player));
 }
 
@@ -104,7 +105,7 @@ void Game::Run()
         // TODO: Move to output
         // After every second, update the window title.
         if (frame_end - title_timestamp >= 1000) {
-            renderer_->UpdateWindowTitle(actors_[0]->health, score_, life_, frame_count);
+            renderer_->UpdateWindowTitle(actors_[0]->health, score_, remainingLives_, frame_count);
             frame_count = 0;
             title_timestamp = frame_end;
         }
@@ -131,12 +132,27 @@ void Game::Input() {
         }
     }
     const uint8_t *keyboardState = SDL_GetKeyboardState(NULL);
-    for (auto &actor: actors_) {
-        actor->ProcessInput(keyboardState);
+
+    if (state_ == kPause) {
+        if (keyboardState[SDL_SCANCODE_SPACE]) {
+            auto &player = actors_[0];
+            player->isAlive = true;
+            player->health = kPlayerHealth;
+            remainingLives_ = kRemainingLives;
+            player->SetPosition(100, renderer_->GetScreenHeight()/2);
+            state_ = kPlay;
+        }
+    }
+
+    if (state_ == kPlay) {
+        for (auto &actor: actors_) {
+            actor->ProcessInput(keyboardState);
+        }
     }
 }
 
 void Game::Update() {
+
     if (state_ == kPlay) {
 
         for (auto &actor: actors_) {
@@ -148,18 +164,6 @@ void Game::Update() {
             DetectBulletCollision(bullet.get());
         }
 
-        if (life_ < 0) {
-            state_ = kPause;
-            actors_.erase(actors_.begin()+1, actors_.end());
-            bullets_.erase(bullets_.begin(), bullets_.end());
-            return;
-        } else if (actors_[0]->health <= 0) {
-            state_ = kRespawn;
-            actors_.erase(actors_.begin()+1, actors_.end());
-            bullets_.erase(bullets_.begin(), bullets_.end());
-            return;
-        }
-
         SpawnAliens();
 
         // Add pending actors
@@ -167,6 +171,22 @@ void Game::Update() {
         while (pendingActors_.empty() == false) {
             actors_.emplace_back(std::move(pendingActors_.back()));
             pendingActors_.pop_back();
+        }
+
+
+        auto &player = actors_[0];
+
+        if (remainingLives_ < 0) {
+            state_ = kPause;
+            actors_.erase(actors_.begin()+1, actors_.end());
+            bullets_.erase(bullets_.begin(), bullets_.end());
+            return;
+        } else if (player->health <= 0) {
+            state_ = kRespawn;
+            actors_.erase(actors_.begin()+1, actors_.end());
+            bullets_.erase(bullets_.begin(), bullets_.end());
+            remainingLives_--;
+            return;
         }
 
         // Add pending bullets
@@ -185,11 +205,11 @@ void Game::Update() {
             [](auto const &a){ return a->isAlive == false; }), bullets_.end());
     } else if (state_ == kRespawn) {
         if (--respawnTimer_ <= 0){
-            state_ == kPlay;
+            auto &player = actors_[0];
+            state_ = kPlay;
             respawnTimer_ = kRespawnTime;
-            Player *player = static_cast<Player*>(actors_[0].get());
             player->isAlive = true;
-            player->health = 10;
+            player->health = kPlayerHealth;
         }
     }
 }
@@ -205,19 +225,6 @@ void Game::SpawnAliens() {
         alien->SetPosition(renderer_->GetScreenWidth(), random_y_(eng_));
         alien->SetVelocity(random_dx_(eng_), random_dy_(eng_));
         AddActor(std::move(alien));
-
-
-        // Entity enemy(*enemy_texture_.get(),
-        //              renderer_->GetScreenWidth(),
-        //              renderer_->GetScreenHeight());
-        // enemy.x = renderer_->GetScreenWidth();
-        // enemy.y = random_y_(eng_);
-        // enemy.dx = random_dx_(eng_);
-        // enemy.dy = 0;//random_dy_(eng_);
-        // enemy.health = 1;
-        // enemy.side = Entity::Side::kEnemy;
-        // enemies_.emplace_back(std::move(enemy));
-
         alienSpawnTimer_ = random_timer_(eng_);
     }
 }
@@ -237,141 +244,3 @@ void Game::DetectBulletCollision(BulletActor *bullet) {
         }
     }
 }
-
-#if 0
-void Game::UpdateGame() {
-
-    if (player_->health <= 0) {
-        enemies_.clear();
-        entities_.clear();
-        player_->health = 2;
-        return;
-    }
-    player_->Update();
-    if (player_->fire && player_->reload == 0) {
-        FireBullet();
-    }
-
-    for (auto &enemy: enemies_) {
-        enemy.Update();
-        if (enemy.reload <= 0) {
-            FireAlienBullet(enemy);
-        }
-    }
-    enemies_.remove_if([](Entity &e){ return e.health == 0; });
-
-    for (auto &entity: entities_) {
-        entity.Update();
-        if (entity.health && BulletHitFighter(entity)) {
-            entity.health = 0;
-        }
-    }
-    entities_.remove_if([](Entity &e){ return e.health == 0; });
-
-    SpawnEnemies();
-}
-
-void Game::GenerateOutput() {
-    renderer_->Render(*player_.get(), entities_, enemies_);
-}
-
-bool Game::BulletHitFighter(Entity &b) {
-    for (auto &e: enemies_) {
-        if (e.side != b.side
-           && Collision(b.x, b.y, b.w, b.h, e.x, e.y, e.w, e.h)) {
-            b.health = 0;
-            e.health--;
-            e.health = e.health < 0 ? 0 : e.health;
-            return true;
-        }
-    }
-    Player &e = *player_.get();
-    if (e.side != b.side
-        && Collision(b.x, b.y, b.w, b.h, e.x, e.y, e.w, e.h)) {
-        b.health = 0;
-        e.health--;
-        e.health = e.health < 0 ? 0 : e.health;
-        return true;
-    }
-    return false;
-}
-
-void Game::CalcSlope(int x1, int y1, int x2, int y2, float *dx, float *dy)
-{
-	int steps = std::max(abs(x1 - x2), abs(y1 - y2));
-
-	if (steps == 0)
-	{
-		*dx = *dy = 0;
-		return;
-	}
-
-	*dx = (x1 - x2);
-	*dx /= steps;
-
-	*dy = (y1 - y2);
-	*dy /= steps;
-}
-
-bool Game::Collision(int x1, int y1, int w1, int h1,
-                     int x2, int y2, int w2, int h2) {
-    return (std::max(x1, x2) < std::min(x1 + w1, x2 + w2))
-            && (std::max(y1, y2) < std::min(y1 + h1, y2 + h2));
-}
-
-void Game::FireAlienBullet(Entity &e) {
-    Entity bullet(*alien_bullet_texture_.get(),
-                  renderer_->GetScreenWidth(),
-                  renderer_->GetScreenHeight());
-    bullet.x = e.x;// + e.w - Config::kBulletSpeed;
-	bullet.y = e.y;
-	bullet.health = 1;
-    bullet.side = e.side;
-
-    bullet.x += (e.w / 2) - (bullet.w / 2);
-	bullet.y += (e.h / 2) - (bullet.h / 2);
-    if (e.x - player_->x < 100) {
-        return;
-    }
-    CalcSlope(player_->x + (player_->w / 2), player_->y + (player_->h / 2), e.x, e.y, &bullet.dx, &bullet.dy);
-
-	bullet.dx *= Config::kAlienBulletSpeed;
-    bullet.dy *= Config::kAlienBulletSpeed;
-
-	e.reload = random_alien_bullet_(eng_);
-    entities_.emplace_back(std::move(bullet));
-}
-
-void Game::FireBullet() {
-    Entity bullet(*bullet_texture_.get(),
-                  renderer_->GetScreenWidth(),
-                  renderer_->GetScreenHeight());
-    bullet.x = player_->x + player_->w - Config::kBulletSpeed;
-	bullet.y = player_->y;
-	bullet.dx = Config::kBulletSpeed;
-	bullet.health = 1;
-    bullet.side = Entity::Side::kPlayer;
-
-	bullet.y += (player_->h / 2) - (bullet.h / 2);
-
-	player_->reload = 8;
-    entities_.emplace_back(std::move(bullet));
-}
-
-void Game::SpawnEnemies() {
-    if (--enemySpawnTimer_ <= 0) {
-        Entity enemy(*enemy_texture_.get(),
-                     renderer_->GetScreenWidth(),
-                     renderer_->GetScreenHeight());
-        enemy.x = renderer_->GetScreenWidth();
-        enemy.y = random_y_(eng_);
-        enemy.dx = random_dx_(eng_);
-        enemy.dy = 0;//random_dy_(eng_);
-        enemy.health = 1;
-        enemy.side = Entity::Side::kEnemy;
-        enemies_.emplace_back(std::move(enemy));
-
-        enemySpawnTimer_ = random_timer_(eng_);
-    }
-}
-#endif
