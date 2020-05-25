@@ -19,7 +19,8 @@ public:
         if (nullptr == owner || nullptr == texture_)
             return;
         const SDL_FPoint &pos = owner->GetPosition();
-        texture_->Blit(pos.x, pos.y);
+        // NOTE: Adding 0.5 for rounding e.g. int(1.6 + 0.5) = 2
+        texture_->Blit(pos.x + 0.5f, pos.y + 0.5f);
     }
 private:
     SDLTexture *texture_;

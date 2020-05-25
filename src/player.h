@@ -20,7 +20,7 @@ public:
 private:
     MoveComponent *moveComp_{nullptr};
     const uint8_t kReloadTime{8};
-    int8_t reloadTime_;
+    int8_t reloadTime_{0};
 };
 
 

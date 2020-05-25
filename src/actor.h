@@ -49,7 +49,15 @@ public:
         position.x = x;
         position.y = y;
     }
-    SDL_Point &GetSize() { return size; }
+    SDL_Rect GetRect() {
+        return {
+            static_cast<int>(position.x),
+            static_cast<int>(position.y),
+            size.x,
+            size.y
+        };
+    }
+    SDL_Point GetSize() { return size; }
 
     // void AddComponent(Component *component) override {
     //     if (nullptr == component)

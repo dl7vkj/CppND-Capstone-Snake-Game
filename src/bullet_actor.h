@@ -9,7 +9,7 @@
 
 class BulletActor : public Actor {
 public:
-    BulletActor(Game *game);
+    BulletActor(Game *game, Side side);
 
     void Update() override;
 
@@ -19,6 +19,7 @@ public:
 private:
     MoveComponent *moveComp_{nullptr};
     uint16_t screenWidth_;
+    uint16_t screenHeight_;
 };
 
 

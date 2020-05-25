@@ -9,9 +9,12 @@
 #include "texture_component.h"
 #include "fence_component.h"
 #include "bullet_actor.h"
+#include "utility.h"
 
 
-AlienActor::AlienActor(Game *game) : Actor(game) {
+AlienActor::AlienActor(Game *game)
+: Actor(game), reloadTime_(game->GetRandomAlienBulletReloadTime()) {
+    side = Side::kAlien;
     // Create/Add move component
     auto mvCmp = std::make_unique<MoveComponent>(this);
     moveComp_ = mvCmp.get();
@@ -46,12 +49,18 @@ void AlienActor::Update() {
     // Alien leave playground...
     if (position.x < -size.x) {
         isAlive = false;
+        return;
     }
     // Alien bounce off
     if (position.y <= 0) {
         moveComp_->velocity.y = fabs(moveComp_->velocity.y);
     } else if (position.y >= screenHeight_ - size.y) {
         moveComp_->velocity.y = fabs(moveComp_->velocity.y)*-1.0f;
+    }
+    // Alien shoot
+     if (--reloadTime_ <= 0) {
+        FireBullet();
+        reloadTime_ = game->GetRandomAlienBulletReloadTime();
     }
 }
 
@@ -69,15 +78,20 @@ void AlienActor::SetVelocity(float x, float y) {
 }
 
 void AlienActor::FireBullet() {
-    auto bullet = std::make_unique<BulletActor>(game);
+    auto bullet = std::make_unique<BulletActor>(game, side);
+    // Set bullet playground
     SDL_FPoint tgtPos{position};
     SDL_Point bulletSize = bullet->GetSize();
-
     tgtPos.x += (size.x / 2) - (bulletSize.x / 2);
 	tgtPos.y += (size.y / 2) - (bulletSize.y / 2);
-
     bullet->SetPosition(tgtPos);
-    bullet->SetVelocity(-Config::kAlienBulletSpeed, 0.0f);
 
+    // Set bullet velocity
+    SDL_FPoint slope =  Utility::CalcSlope(tgtPos, game->GetPlayerRect());
+    slope.x *= Config::kAlienBulletSpeed;
+    slope.y *= Config::kAlienBulletSpeed;
+    bullet->SetVelocity(slope.x, slope.y);
+
+    // Add bullet to game
     game->AddBullet(std::move(bullet));
 }
