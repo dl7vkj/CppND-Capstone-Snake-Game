@@ -13,7 +13,7 @@ public:
     void Update() override {
         if (nullptr == owner)
             return;
-        SDL_FPoint &pos = owner->GetPosition();
+        SDL_FPoint pos = owner->GetPosition();
 
         if (pos.x < fence.x) {
             pos.x = fence.x;
@@ -25,7 +25,7 @@ public:
         } else if (pos.y > fence.y + fence.h) {
             pos.y = fence.y + fence.h;
         }
-
+        owner->SetPosition(pos);
         // pos.x = pos.x < fence.x ? fence.x : pos.x > fence.x + fence.w ? fence.x + fence.w : pos.x;
         // pos.y = pos.y < fence.y ? fence.y : pos.y > fence.y + fence.h ? fence.y + fence.h : pos.y;
     };

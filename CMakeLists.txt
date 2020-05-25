@@ -24,6 +24,8 @@ add_executable(SnakeGame
     src/player.cpp
     src/alien_actor.cpp
     src/bullet_actor.cpp
+    src/star.cpp
+    src/utility.cpp
 )
 #string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)
 target_link_libraries(SnakeGame ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})

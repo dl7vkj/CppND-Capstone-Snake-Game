@@ -1,9 +1,13 @@
 #include "renderer.h"
+
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <random>
 
 #include "SDL_image.h"
+
+#include "utility.h"
 
 Renderer::Renderer(const std::size_t screen_width,
                    const std::size_t screen_height)
@@ -34,6 +38,9 @@ Renderer::Renderer(const std::size_t screen_width,
     }
 
     IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
+
+    // Initialize background stars
+    InitBgStars();
 }
 
 Renderer::~Renderer() {
@@ -45,9 +52,16 @@ Renderer::~Renderer() {
 void Renderer::Render() {
     SDL_SetRenderDrawColor(sdl_renderer, 0x20, 0x20, 0x20, 0xFF);
     SDL_RenderClear(sdl_renderer);
+
+    // Render background stars
+    RenderBgStars();
+
+    // Render textures
     for (auto texComp: textureComponents_) {
         texComp->Draw();
     }
+
+
     SDL_RenderPresent(sdl_renderer);
 }
 
@@ -82,4 +96,30 @@ void Renderer::UpdateWindowTitle(int health, int score, int life, int fps)
     stream << "[ Health: " << health << " | Score: " << score << " | Life: " << life << " | FPS: " << fps << " ]";
     // std::string title{"FPS: " + std::to_string(fps)};
     SDL_SetWindowTitle(sdl_window, stream.str().c_str());
+}
+
+void Renderer::InitBgStars() {
+    std::random_device dev;
+    std::mt19937 eng{dev()};
+    std::uniform_int_distribution<int> dist{0, std::numeric_limits<int>::max()};
+    for (int i = 0; i < 500; i++) {
+        int x = dist(eng) % screenWidth_;
+        int y = dist(eng) % screenHeight_;
+        float speed = (10 + dist(eng) % 70)*0.1f;
+        auto star = std::make_unique<Star>(nullptr, speed);
+        star->SetPosition(x, y);
+        bgStars_.emplace_back(std::move(star));
+    }
+}
+
+void Renderer::RenderBgStars() {
+    for (auto &star: bgStars_) {
+        star->Update();
+        int c = star->GetSpeed();
+        SDL_SetRenderDrawColor(sdl_renderer, c, c, c, 255);
+        SDL_FPoint pos{star->GetPosition()};
+        int x = pos.x;
+        int y = pos.y;
+        SDL_RenderDrawLine(sdl_renderer, x, y, Utility::Max(x/2, 1), y);
+    }
 }
