@@ -14,6 +14,7 @@
 
 #include "actor.h"
 #include "player.h"
+#include "alien_actor.h"
 #include "move_component.h"
 #include "texture_component.h"
 #include "fence_component.h"
@@ -52,7 +53,12 @@ Game::Game()
 #endif
 
 Game::Game()
-  : running_(true)
+  : running_(true),
+    eng_(dev_()),
+    random_y_(0, Config::kScreenHeight),
+    random_dx_(-5.0f, -2.0f),
+    random_dy_(-2.0f, +2.0f),
+    random_timer_(30, 90)
 {
     // Create the renderer
     renderer_ = std::make_unique<Renderer>(Config::kScreenWidth,
@@ -89,8 +95,8 @@ void Game::Run()
         GenerateOutput();
         frame_end = SDL_GetTicks();
 
-        // Keep track of how long each loop through the input/update/render cycle
-        // takes.
+        // Keep track of how long each loop through the
+        // input/update/render cycle takes.
         frame_count++;
         frame_duration = frame_end - frame_start;
 
@@ -134,6 +140,12 @@ void Game::UpdateGame() {
         actor->Update();
     }
 
+    for (auto &bullet: bullets_) {
+        bullet->Update();
+    }
+
+    SpawnAliens();
+
     // Add pending actors to actors vector
     std::reverse(pendingActors_.begin(), pendingActors_.end());
     while (pendingActors_.empty() == false) {
@@ -141,14 +153,49 @@ void Game::UpdateGame() {
         pendingActors_.pop_back();
     }
 
+    // Add pending bullets to bullets vector
+    std::reverse(pendingBullets_.begin(), pendingBullets_.end());
+    while (pendingBullets_.empty() == false) {
+        bullets_.emplace_back(std::move(pendingBullets_.back()));
+        pendingBullets_.pop_back();
+    }
+
     // Remove died actors
     actors_.erase(std::remove_if(actors_.begin(), actors_.end(),
         [](auto const &a){ return a->isAlive == false; }), actors_.end());
+
+    // Remove died bullets
+    bullets_.erase(std::remove_if(bullets_.begin(), bullets_.end(),
+        [](auto const &a){ return a->isAlive == false; }), bullets_.end());
 
 }
 
 void Game::GenerateOutput() {
     renderer_->Render();
+}
+
+void Game::SpawnAliens() {
+    if (--alienSpawnTimer_ <= 0) {
+        // Create the alien
+        auto alien = std::make_unique<AlienActor>(this);
+        alien->SetPosition(renderer_->GetScreenWidth(), random_y_(eng_));
+        alien->SetVelocity(random_dx_(eng_), random_dy_(eng_));
+        AddActor(std::move(alien));
+
+
+        // Entity enemy(*enemy_texture_.get(),
+        //              renderer_->GetScreenWidth(),
+        //              renderer_->GetScreenHeight());
+        // enemy.x = renderer_->GetScreenWidth();
+        // enemy.y = random_y_(eng_);
+        // enemy.dx = random_dx_(eng_);
+        // enemy.dy = 0;//random_dy_(eng_);
+        // enemy.health = 1;
+        // enemy.side = Entity::Side::kEnemy;
+        // enemies_.emplace_back(std::move(enemy));
+
+        alienSpawnTimer_ = random_timer_(eng_);
+    }
 }
 
 #if 0

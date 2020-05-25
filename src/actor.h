@@ -43,6 +43,11 @@ public:
 
     SDL_FPoint &GetPosition() override { return position; }
     void SetPosition(SDL_FPoint position) override { this->position = position; }
+    void SetPosition(float x, float y) {
+        position.x = x;
+        position.y = y;
+    }
+    SDL_Point &GetSize() { return size; }
 
     // void AddComponent(Component *component) override {
     //     if (nullptr == component)
@@ -64,6 +69,7 @@ public:
 protected:
     Game *game;
     SDL_FPoint position{0.0f, 0.0f};
+    SDL_Point size{0, 0};
     std::vector<std::unique_ptr<Component>> components_{};
 };
 

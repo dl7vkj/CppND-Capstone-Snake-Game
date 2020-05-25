@@ -8,10 +8,11 @@ class GameObject;
 class Component {
 public:
     // friend class Actor;
-    Component(GameObject *owner);
-    virtual ~Component();
+    Component(GameObject *game_object) : owner(game_object) {}
+    virtual ~Component() {}
     virtual void Update() {};
     virtual void ProcessInput(const uint8_t *keyboard_state) {}
+
 protected:
     GameObject *owner;
 };

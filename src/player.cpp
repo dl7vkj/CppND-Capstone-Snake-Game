@@ -26,21 +26,65 @@ Player::Player(Game *game) : Actor(game) {
                        "Can't get texture!");
         return;
     }
+    size.x = texture->GetWidth();
+    size.y = texture->GetHeight();
     components_.emplace_back(std::make_unique<TextureComponent>(this, texture));
 
     // Create/Add fence component
     SDL_Rect rect{0, 0, 0, 0};
     rect.w = renderer->GetScreenWidth();
     rect.h = renderer->GetScreenHeight();
-    rect.w -= texture->GetWidth();
-    rect.h -= texture->GetHeight();
+    rect.w -= size.x;
+    rect.h -= size.y;
     auto fence = std::make_unique<FenceComponent>(this);
     fence->fence = rect;
     components_.emplace_back(std::move(fence));
 }
 
+void Player::ProcessInput(const uint8_t *keyboard_state) {
+        Actor::ProcessInput(keyboard_state);
+        moveComp_->velocity.x = 0.0f;
+        moveComp_->velocity.y = 0.0f;
+        if (keyboard_state[SDL_SCANCODE_UP]) {
+            moveComp_->velocity.y = -4.0f;
+        }
+        if (keyboard_state[SDL_SCANCODE_DOWN]) {
+            moveComp_->velocity.y = 4.0f;
+        }
+        if (keyboard_state[SDL_SCANCODE_LEFT]) {
+            moveComp_->velocity.x = -4.0f;
+        }
+        if (keyboard_state[SDL_SCANCODE_RIGHT]) {
+            moveComp_->velocity.x = 4.0f;
+        }
+        if (keyboard_state[SDL_SCANCODE_LCTRL]) {
+            FireBullet();
+        }
+    }
+
 void Player::FireBullet() {
     auto bullet = std::make_unique<BulletActor>(game);
-    bullet->SetPosition(position);
-    game->AddActor(std::move(bullet));
+    SDL_FPoint tgtPos;
+
+    tgtPos.x = position.x + size.x;
+    tgtPos.y = position.y + (size.y / 2) - (bullet->GetSize().y / 2);
+
+    bullet->SetPosition(tgtPos);
+    bullet->SetVelocity(Config::kBulletSpeed, 0.0f);
+    game->AddBullet(std::move(bullet));
+
+
+    //     Entity bullet(*bullet_texture_.get(),
+    //               renderer_->GetScreenWidth(),
+    //               renderer_->GetScreenHeight());
+    // bullet.x = player_->x + player_->w - Config::kBulletSpeed;
+	// bullet.y = player_->y;
+	// bullet.dx = Config::kBulletSpeed;
+	// bullet.health = 1;
+    // bullet.side = Entity::Side::kPlayer;
+
+	// bullet.y += (player_->h / 2) - (bullet.h / 2);
+
+	// player_->reload = 8;
+    // entities_.emplace_back(std::move(bullet));
 }

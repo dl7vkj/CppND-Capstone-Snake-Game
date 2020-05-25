@@ -18,10 +18,11 @@ add_executable(SnakeGame
     src/game.cpp
     src/controller.cpp
     src/renderer.cpp
-    src/component.cpp
+    # src/component.cpp
     src/texture_component.cpp
     src/actor.cpp
     src/player.cpp
+    src/alien_actor.cpp
     src/bullet_actor.cpp
 )
 #string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)

@@ -12,6 +12,7 @@
 #include "player.h"
 #include "entity.h"
 #include "actor.h"
+#include "bullet_actor.h"
 
 
 class Game {
@@ -25,6 +26,9 @@ public:
     void AddActor(std::unique_ptr<Actor> actor) {
         pendingActors_.emplace_back(std::move(actor));
     }
+    void AddBullet(std::unique_ptr<BulletActor> bullet) {
+        pendingBullets_.emplace_back(std::move(bullet));
+    }
     void RemoveActor() {}
     // int GetScore() const;
     // int GetSize() const;
@@ -34,10 +38,14 @@ private:
     void UpdateGame();
     void GenerateOutput();
 
+    void SpawnAliens();
+
     // Renderer renderer_;
     std::unique_ptr<Renderer> renderer_;
-    std::vector<std::unique_ptr<Actor>> actors_;
-    std::vector<std::unique_ptr<Actor>> pendingActors_;
+    std::vector<std::unique_ptr<Actor>> actors_{};
+    std::vector<std::unique_ptr<Actor>> pendingActors_{};
+    std::vector<std::unique_ptr<Actor>> bullets_{};
+    std::vector<std::unique_ptr<Actor>> pendingBullets_{};
     // std::unique_ptr<Controller> controller_;
 
     // TODO: flyweight pattern
@@ -50,14 +58,18 @@ private:
     std::list<Entity> entities_;
     std::list<Entity> enemies_;
 #endif
-#if 0
-    int enemySpawnTimer_{0};
-#endif
+
+    int alienSpawnTimer_{300};
     // SDL_Point food;
     bool running_;
-#if 0
     std::random_device dev_;
     std::mt19937 eng_;
+    std::uniform_int_distribution<int> random_y_;
+    std::uniform_real_distribution<float> random_dx_;
+    std::uniform_real_distribution<float> random_dy_;
+    std::uniform_int_distribution<int> random_timer_;
+
+#if 0
     std::uniform_int_distribution<int> random_y_;
     std::uniform_int_distribution<int> random_dx_;
     std::uniform_int_distribution<int> random_dy_;

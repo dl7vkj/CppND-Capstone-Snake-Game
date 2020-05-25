@@ -29,12 +29,12 @@ public:
         auto result = textures_.find(filename);
         if (result != textures_.end()) {
             // Texture already exists
-            SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG,
+            SDL_LogMessage(SDL_LOG_CATEGORY_RENDER, SDL_LOG_PRIORITY_DEBUG,
                        "Texture found %s", filename.c_str());
             return result->second.get();
         } else {
             // Create texture
-            SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG,
+            SDL_LogMessage(SDL_LOG_CATEGORY_RENDER, SDL_LOG_PRIORITY_DEBUG,
                        "Load texture %s", filename.c_str());
             textures_.emplace(filename, std::make_unique<SDLTexture>(filename,
                 *sdl_renderer));
@@ -50,8 +50,10 @@ public:
     }
 
     void UnregisterTextureComponent(TextureComponent *texture_component) {
-        textureComponents_.erase(std::remove_if(textureComponents_.begin(), textureComponents_.end(),
-            [&](auto const &x){ return x == texture_component; }), textureComponents_.end());
+        textureComponents_.erase(
+            std::remove_if(textureComponents_.begin(), textureComponents_.end(),
+            [&](auto const &x){ return x == texture_component; }),
+            textureComponents_.end());
     }
 
     std::size_t GetScreenWidth() const { return screenWidth_; }
