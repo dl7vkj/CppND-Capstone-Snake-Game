@@ -43,11 +43,11 @@ public:
         }
     }
 
-    void AddTextureComponent(TextureComponent *texture_component) {
+    void RegisterTextureComponent(TextureComponent *texture_component) {
         textureComponents_.push_back(texture_component);
     }
 
-    void RemoveTextureComponent(TextureComponent *texture_component) {
+    void UnregisterTextureComponent(TextureComponent *texture_component) {
         if (nullptr == texture_component)
             return;
         auto result = std::find(textureComponents_.begin(),
