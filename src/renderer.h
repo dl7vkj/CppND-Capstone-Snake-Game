@@ -59,7 +59,6 @@ public:
 
     std::size_t GetScreenWidth() const { return screenWidth_; }
     std::size_t GetScreenHeight() const { return screenHeight_; }
-    SDL_Renderer &GetSDLRenderer() { return *sdl_renderer; }
 
 private:
     SDL_Window *sdl_window;
