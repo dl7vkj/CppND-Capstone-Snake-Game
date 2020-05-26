@@ -27,7 +27,7 @@
 #include "none_graphics_component.h"
 #include "player_input_component.h"
 #include "player_physics_component.h"
-#include "player_graphics_component.h"
+#include "texture_graphics_component.h"
 
 
 // template <typename A, typename B, typename C>
@@ -102,7 +102,7 @@ Game::Game()
                                                             Config::kScreenWidth,
                                                             Config::kScreenHeight);
     // Create graphics component for player
-    auto graphics = std::make_unique<PlayerGraphicsComponent>(texture);
+    auto graphics = std::make_unique<TextureGraphicsComponent>(texture);
     // Create player game object and move components to game object
     auto obj = std::make_unique<GameObject>(std::move(input),
                                             std::move(physics),
