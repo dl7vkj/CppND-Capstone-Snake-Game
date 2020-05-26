@@ -4,18 +4,18 @@
 #include "SDL.h"
 
 #include "actor.h"
-#include "component.h"
+#include "render_component.h"
 #include "sdl_texture.h"
 
 
-class TextureComponent : public Component {
+class TextureComponent : public RenderComponent {
 public:
     TextureComponent(GameObject *game_object, SDLTexture *texture);
     ~TextureComponent();
     void SetTexture(SDLTexture *texture) {
         texture_ = texture;
     }
-    void Draw() {
+    void Draw() override {
         if (nullptr == owner || nullptr == texture_)
             return;
         const SDL_FPoint &pos = owner->GetPosition();

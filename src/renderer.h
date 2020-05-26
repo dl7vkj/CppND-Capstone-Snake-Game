@@ -10,8 +10,8 @@
 #include "player.h"
 #include "entity.h"
 #include "sdl_texture.h"
-#include "texture_component.h"
-#include "star.h"
+#include "render_component.h"
+// #include "star.h"
 
 
 class Renderer {
@@ -23,10 +23,12 @@ public:
 
     void Render();
 
-    void InitBgStars();
-    void RenderBgStars();
+    // void InitBgStars();
+    // void RenderBgStars();
 
     void UpdateWindowTitle(int health, int score, int life, int fps);
+
+    SDL_Renderer *GetSDLRendererHandle() { return sdl_renderer; }
 
     SDLTexture *GetTexture(std::string filename) {
         auto result = textures_.find(filename);
@@ -46,13 +48,13 @@ public:
         }
     }
 
-    void RegisterTextureComponent(TextureComponent *texture_component) {
+    void RegisterTextureComponent(RenderComponent *texture_component) {
         if (nullptr == texture_component)
             return;
         textureComponents_.push_back(texture_component);
     }
 
-    void UnregisterTextureComponent(TextureComponent *texture_component) {
+    void UnregisterTextureComponent(RenderComponent *texture_component) {
         textureComponents_.erase(
             std::remove_if(textureComponents_.begin(), textureComponents_.end(),
             [&](auto const &x){ return x == texture_component; }),
@@ -66,8 +68,8 @@ private:
     SDL_Window *sdl_window;
     SDL_Renderer *sdl_renderer;
     std::unordered_map<std::string, std::unique_ptr<SDLTexture>> textures_;
-    std::vector<TextureComponent*> textureComponents_;
-    std::vector<std::unique_ptr<Star>> bgStars_;
+    std::vector<RenderComponent*> textureComponents_;
+    // std::vector<std::unique_ptr<Star>> bgStars_;
 
     const std::size_t screenWidth_;
     const std::size_t screenHeight_;

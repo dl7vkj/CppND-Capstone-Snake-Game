@@ -20,6 +20,7 @@ add_executable(SnakeGame
     src/renderer.cpp
     # src/component.cpp
     src/texture_component.cpp
+    src/star_component.cpp
     src/actor.cpp
     src/player.cpp
     src/alien_actor.cpp

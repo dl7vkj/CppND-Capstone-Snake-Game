@@ -13,6 +13,7 @@
 #include "entity.h"
 #include "actor.h"
 #include "bullet_actor.h"
+#include "star.h"
 
 
 class Game {
@@ -54,6 +55,7 @@ private:
     std::vector<std::unique_ptr<Actor>> pendingActors_{};
     std::vector<std::unique_ptr<BulletActor>> bullets_{};
     std::vector<std::unique_ptr<BulletActor>> pendingBullets_{};
+    std::vector<std::unique_ptr<Star>> bgStars_;
 
     int alienSpawnTimer_{60};
     bool running_{true};

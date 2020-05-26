@@ -5,13 +5,13 @@
 
 #include "SDL.h"
 
-#include "game_object.h"
+#include "actor.h"
 #include "move_component.h"
 
 
 class Star : public GameObject {
 public:
-    Star(Game *game, float speed);
+    Star(Game *game, float speed, int screen_width);
 
     void Update() override;
 

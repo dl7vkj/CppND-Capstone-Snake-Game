@@ -18,13 +18,14 @@
 #include "move_component.h"
 #include "texture_component.h"
 #include "fence_component.h"
+#include "star.h"
 
 #if 0
 Game::Game()
   : running_(true),
     eng_(dev_()),
     random_y_(0, Config::kScreenHeight),
-    random_dx_(-5, -2),
+    random_dx_(-6, -4),
     random_dy_(-2, +2),
     random_timer_(30, 90),
     random_alien_bullet_(0, 120)
@@ -55,7 +56,7 @@ Game::Game()
 Game::Game()
   : eng_(dev_()),
     random_y_(0, Config::kScreenHeight),
-    random_dx_(-5.0f, -2.0f),
+    random_dx_(-6.0f, -3.5f),
     random_dy_(-2.0f, +2.0f),
     random_timer_(30, 90),
     random_alien_bullet_(30, 120)
@@ -63,6 +64,18 @@ Game::Game()
     // Create the renderer
     renderer_ = std::make_unique<Renderer>(Config::kScreenWidth,
                                            Config::kScreenHeight);
+
+    // Create the background stars
+    std::uniform_int_distribution<int> dist{0, std::numeric_limits<int>::max()};
+    for (int i = 0; i < 500; i++) {
+        int x = dist(eng_) % Config::kScreenWidth;
+        int y = dist(eng_) % Config::kScreenHeight;
+        float speed = (10 + dist(eng_) % 20)*0.1f;
+        auto star = std::make_unique<Star>(this, -speed, Config::kScreenWidth);
+        star->SetPosition(x, y);
+        // bgStars_.emplace_back(std::move(star));
+        bgStars_.emplace_back(std::move(star));
+    }
 
     // Create the player
     auto player = std::make_unique<Player>(this);
@@ -152,6 +165,11 @@ void Game::Input() {
 }
 
 void Game::Update() {
+
+    // Update background stars
+    for (auto &star: bgStars_) {
+        star->Update();
+    }
 
     if (state_ == kPlay) {
 

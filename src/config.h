@@ -10,8 +10,8 @@ namespace Config {
   constexpr std::size_t kScreenWidth{1280};
   constexpr std::size_t kScreenHeight{720};
   constexpr int kBulletSpeed{16};
-  constexpr int kAlienBulletSpeed{8};
-  constexpr int kPlayerSpeed{4};
+  constexpr int kAlienBulletSpeed{10};
+  constexpr int kPlayerSpeed{5};
   // constexpr std::size_t kGridWidth{32};
   // constexpr std::size_t kGridHeight{32};
   const std::string kPlayerImage{"../gfx/player.png"};

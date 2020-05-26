@@ -2,6 +2,7 @@
 
 #include "config.h"
 #include "game.h"
+#include "texture_component.h"
 
 
 BulletActor::BulletActor(Game *game, Side side)
