@@ -6,7 +6,7 @@
 
 class PlayerInputComponent : public InputComponent {
 public:
-    void Update(class GameObject &obj, class Controller &controller) override {}
+    void Update(class GameObject &obj, class Controller const &controller) override {}
 };
 
 

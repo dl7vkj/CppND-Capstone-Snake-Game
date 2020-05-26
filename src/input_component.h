@@ -6,7 +6,7 @@
 
 class InputComponent : public Component {
 public:
-    virtual void Update(class GameObject &obj, class Controller &controller) = 0;
+    virtual void Update(class GameObject &obj, class Controller const &controller) = 0;
 };
 
 

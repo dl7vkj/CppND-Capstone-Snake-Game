@@ -8,6 +8,8 @@
 #include "SDL_image.h"
 
 #include "utility.h"
+#include "graphics_component.h"
+
 
 Renderer::Renderer(const std::size_t screen_width,
                    const std::size_t screen_height)
@@ -56,11 +58,10 @@ void Renderer::Render() {
     // Render background stars
     // RenderBgStars();
 
-    // Render textures
-    for (auto texComp: textureComponents_) {
-        texComp->Draw();
+    //Render graphics components
+    for (auto &obj: gameObjects_) {
+       obj->UpdateGraphics(*this);
     }
-
 
     SDL_RenderPresent(sdl_renderer);
 }

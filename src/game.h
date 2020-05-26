@@ -9,12 +9,13 @@
 
 // #include "controller.h"
 #include "renderer.h"
-#include "player.h"
-#include "entity.h"
-#include "actor.h"
-#include "bullet_actor.h"
-#include "star.h"
+// #include "player.h"
+// #include "entity.h"
+// #include "actor.h"
+// #include "bullet_actor.h"
+// #include "star.h"
 
+#include "game_object.h"
 
 class Game {
 public:
@@ -26,14 +27,17 @@ public:
 
     void Run();
 
-    Renderer *GetRenderer() { return renderer_.get(); }
-    void AddActor(std::unique_ptr<Actor> actor) {
-        pendingActors_.emplace_back(std::move(actor));
+    Renderer &GetRenderer() { return renderer_; }
+    void AddGameObject(std::unique_ptr<GameObject> obj) {
+        pendingObjs_.emplace_back(std::move(obj));
     }
-    void AddBullet(std::unique_ptr<BulletActor> bullet) {
-        pendingBullets_.emplace_back(std::move(bullet));
-    }
-    SDL_Rect GetPlayerRect() { return actors_[0]->GetRect(); }
+    // void AddActor(std::unique_ptr<Actor> actor) {
+    //     pendingActors_.emplace_back(std::move(actor));
+    // }
+    // void AddBullet(std::unique_ptr<BulletActor> bullet) {
+    //     pendingBullets_.emplace_back(std::move(bullet));
+    // }
+    // SDL_Rect GetPlayerRect() { return actors_[0]->GetRect(); }
     int GetRandomAlienBulletReloadTime() { return random_alien_bullet_(eng_); }
     // int GetScore() const;
     // int GetSize() const;
@@ -47,15 +51,18 @@ private:
     void Update();
     void Output();
 
-    void DetectBulletCollision(BulletActor *bullet);
-    void SpawnAliens();
+    // void DetectBulletCollision(BulletActor *bullet);
+    // void SpawnAliens();
 
-    std::unique_ptr<Renderer> renderer_;
-    std::vector<std::unique_ptr<Actor>> actors_{};
-    std::vector<std::unique_ptr<Actor>> pendingActors_{};
-    std::vector<std::unique_ptr<BulletActor>> bullets_{};
-    std::vector<std::unique_ptr<BulletActor>> pendingBullets_{};
-    std::vector<std::unique_ptr<Star>> bgStars_;
+    // std::unique_ptr<Renderer> renderer_;
+    Renderer renderer_;
+    std::vector<std::unique_ptr<GameObject>> objs_{};
+    std::vector<std::unique_ptr<GameObject>> pendingObjs_{};
+    // std::vector<std::unique_ptr<Actor>> actors_{};
+    // std::vector<std::unique_ptr<Actor>> pendingActors_{};
+    // std::vector<std::unique_ptr<BulletActor>> bullets_{};
+    // std::vector<std::unique_ptr<BulletActor>> pendingBullets_{};
+    // std::vector<std::unique_ptr<Star>> bgStars_;
 
     int alienSpawnTimer_{60};
     bool running_{true};

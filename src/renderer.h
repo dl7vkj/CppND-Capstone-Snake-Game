@@ -4,15 +4,17 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #include "SDL.h"
 
-#include "player.h"
-#include "entity.h"
+// #include "player.h"
+// #include "entity.h"
 #include "sdl_texture.h"
-#include "render_component.h"
+// #include "render_component.h"
 // #include "star.h"
 
+#include "game_object.h"
 
 class Renderer {
 public:
@@ -28,9 +30,12 @@ public:
 
     void UpdateWindowTitle(int health, int score, int life, int fps);
 
-    SDL_Renderer *GetSDLRendererHandle() { return sdl_renderer; }
+    SDL_Renderer &GetSDLRendererHandle() { return *sdl_renderer; }
 
+
+    // Note: Return as pointer, so caller can check if nullptr returned
     SDLTexture *GetTexture(std::string filename) {
+        // TODO: Return nullptr if we can not load the texture
         auto result = textures_.find(filename);
         if (result != textures_.end()) {
             // Texture already exists
@@ -48,17 +53,30 @@ public:
         }
     }
 
-    void RegisterTextureComponent(RenderComponent *texture_component) {
-        if (nullptr == texture_component)
+    // void RegisterTextureComponent(RenderComponent *texture_component) {
+    //     if (nullptr == texture_component)
+    //         return;
+    //     textureComponents_.push_back(texture_component);
+    // }
+
+    // void UnregisterTextureComponent(RenderComponent *texture_component) {
+    //     textureComponents_.erase(
+    //         std::remove_if(textureComponents_.begin(), textureComponents_.end(),
+    //         [&](auto const &x){ return x == texture_component; }),
+    //         textureComponents_.end());
+    // }
+
+    void RegisterGameObjects(GameObject *game_object) {
+        if (nullptr == game_object)
             return;
-        textureComponents_.push_back(texture_component);
+        gameObjects_.push_back(game_object);
     }
 
-    void UnregisterTextureComponent(RenderComponent *texture_component) {
-        textureComponents_.erase(
-            std::remove_if(textureComponents_.begin(), textureComponents_.end(),
-            [&](auto const &x){ return x == texture_component; }),
-            textureComponents_.end());
+    void UnregisterGameObjects(GameObject *game_object) {
+        gameObjects_.erase(
+            std::remove_if(gameObjects_.begin(), gameObjects_.end(),
+            [&](auto const &x){ return x == game_object; }),
+            gameObjects_.end());
     }
 
     std::size_t GetScreenWidth() const { return screenWidth_; }
@@ -68,7 +86,8 @@ private:
     SDL_Window *sdl_window;
     SDL_Renderer *sdl_renderer;
     std::unordered_map<std::string, std::unique_ptr<SDLTexture>> textures_;
-    std::vector<RenderComponent*> textureComponents_;
+    std::vector<GameObject*> gameObjects_;
+    // std::vector<RenderComponent*> textureComponents_;
     // std::vector<std::unique_ptr<Star>> bgStars_;
 
     const std::size_t screenWidth_;
