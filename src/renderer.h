@@ -8,25 +8,17 @@
 
 #include "SDL.h"
 
-// #include "player.h"
-// #include "entity.h"
 #include "texture.h"
-// #include "render_component.h"
-// #include "star.h"
-
 #include "game_object.h"
+
 
 class Renderer {
 public:
-    // Render() = delete;
     explicit Renderer(const std::size_t screen_width,
                       const std::size_t screen_height);
     ~Renderer();
 
     void Render();
-
-    // void InitBgStars();
-    // void RenderBgStars();
 
     void UpdateWindowTitle(int health, int score, int life, int fps);
 
@@ -53,19 +45,6 @@ public:
         }
     }
 
-    // void RegisterTextureComponent(RenderComponent *texture_component) {
-    //     if (nullptr == texture_component)
-    //         return;
-    //     textureComponents_.push_back(texture_component);
-    // }
-
-    // void UnregisterTextureComponent(RenderComponent *texture_component) {
-    //     textureComponents_.erase(
-    //         std::remove_if(textureComponents_.begin(), textureComponents_.end(),
-    //         [&](auto const &x){ return x == texture_component; }),
-    //         textureComponents_.end());
-    // }
-
     void RegisterGameObjects(GameObject *game_object) {
         if (nullptr == game_object)
             return;
@@ -91,8 +70,6 @@ private:
     SDL_Renderer *sdl_renderer;
     std::unordered_map<std::string, std::unique_ptr<Texture>> textures_;
     std::vector<GameObject*> gameObjects_;
-    // std::vector<RenderComponent*> textureComponents_;
-    // std::vector<std::unique_ptr<Star>> bgStars_;
 
     const std::size_t screenWidth_;
     const std::size_t screenHeight_;

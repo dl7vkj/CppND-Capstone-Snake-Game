@@ -33,7 +33,7 @@ public:
             reload = kReloadTime;
             obj.fireBullet = false;
             float x = obj.x + obj.w;
-            float y = obj.y + (obj.h / 2.0f);// - (bullet->GetSize().y / 2);
+            float y = obj.y + (obj.h / 2.0f);
             game.FireBullet(x, y, Config::kBulletSpeed, 0.0f,
                             GameObject::Side::kPlayer);
         }

@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <string>
 
+// TODO: REMOVE !!!!
 namespace Config {
   constexpr std::size_t kFramesPerSecond{60};
   constexpr std::size_t kMsPerFrame{1000 / kFramesPerSecond};

@@ -2,6 +2,8 @@
 #define BULLET_PHYSICS_COMPONENT_H
 
 #include "physics_component.h"
+#include "game.h"
+#include "game_object.h"
 
 
 class BulletPhysicsComponent : public PhysicsComponent {
@@ -12,10 +14,12 @@ public:void Update(GameObject &obj, Game &game) override {
         // Get the screen size
         int screen_w = game.GetRenderer().GetScreenWidth();
         int screen_h = game.GetRenderer().GetScreenHeight();
+
         if (obj.health <= 0) {
             obj.isAlive = false;
             return;
         }
+        // Bullets die when they leave the screen
         if (obj.x > game.GetRenderer().GetScreenWidth()) {
             obj.isAlive = false;
         } else if (obj.x < -obj.w) {

@@ -5,6 +5,7 @@
 class Component {
 public:
     virtual ~Component() {}
+    // TODO: Add receive method
 };
 
 

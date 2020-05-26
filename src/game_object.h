@@ -7,6 +7,7 @@
 #include "physics_component.h"
 #include "graphics_component.h"
 
+
 class GameObject {
 public:
     enum Side{ kPlayer, kAlien, kNeutral};
@@ -30,9 +31,11 @@ public:
       graphics_(std::move(graphics))
     {}
 
-    void ProcessInput(const uint8_t *keyboard_state);
-    void UpdatePhysics(class Game &game);
-    void UpdateGraphics(class Renderer &renderer);
+    virtual ~GameObject() {}
+
+    virtual void ProcessInput(const uint8_t *keyboard_state);
+    virtual void UpdatePhysics(class Game &game);
+    virtual void UpdateGraphics(class Renderer &renderer);
 
 private:
     std::unique_ptr<InputComponent> input_;

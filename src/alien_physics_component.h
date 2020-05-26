@@ -40,14 +40,10 @@ private:
     int reloadTime_{10};
 
     void FireBullet(class GameObject &obj, class Game &game) {
-        // auto bullet = std::make_unique<BulletActor>(game, side);
-        // Set bullet playground
-        // SDL_FPoint tgtPos{obj.x, obj.y};
-        // SDL_Point bulletSize = bullet->GetSize();
         float x = obj.x;
         float y = obj.y;
-        x += (obj.w / 2);// - (bulletSize.x / 2);
-        y += (obj.h / 2);// - (bulletSize.y / 2);
+        x += (obj.w / 2);
+        y += (obj.h / 2);
 
         // Set bullet velocity
         SDL_FPoint slope =  Utility::CalcSlope({x, y}, game.GetPlayerRect());
@@ -55,6 +51,7 @@ private:
         slope.y *= Config::kAlienBulletSpeed;
         game.FireBullet(x, y, slope.x, slope.y, GameObject::Side::kAlien);
     }
+
 };
 
 

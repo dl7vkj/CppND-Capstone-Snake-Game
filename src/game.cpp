@@ -11,15 +11,6 @@
 
 #include "config.h"
 #include "texture.h"
-// #include "SDL_ttf.h"
-
-// #include "actor.h"
-// #include "player.h"
-// #include "alien_actor.h"
-// #include "move_component.h"
-// #include "texture_component.h"
-// #include "fence_component.h"
-// #include "star.h"
 
 #include "game_object.h"
 #include "none_input_component.h"
@@ -30,31 +21,8 @@
 #include "texture_graphics_component.h"
 #include "bullet_physics_component.h"
 #include "alien_physics_component.h"
-
-
-// template <typename A, typename B, typename C>
-// GameObject &CreateGameObject(Game &game) {
-//     auto input = std::make_unique<A>();
-//     auto physics = std::make_unique<B>();
-//     auto graphics = std::make_unique<C>();
-//     auto obj = std::make_unique<GameObject>(std::move(input),
-//                                             std::move(physics),
-//                                             std::move(graphics));
-
-//     // NOTE: Do not register 'none' components
-//     // if constexpr (!std::is_same_v<A, NoneInputsComponent>) {
-//     //     game.GetController().RegisterInputComponent(input.get());
-//     // }
-//     // if constexpr (!std::is_same_v<B, NonePhysicsComponent>) {
-//     //     game.RegisterPhysicsComponent(physics.get());
-//     // }
-//     if constexpr (!std::is_same_v<C, NoneGraphicsComponent>) {
-//         game.GetRenderer().RegisterGameObjects(obj.get());
-//     }
-//     GameObject &retval = *obj.get();
-//     game.AddGameObject(std::move(obj));
-//     return retval;
-// }
+#include "star_physics_component.h"
+#include "star_graphics_component.h"
 
 
 Game::Game()
@@ -66,34 +34,9 @@ Game::Game()
     random_timer_(30, 90),
     random_alien_bullet_(30, 120)
 {
-    // Create the renderer
-    // renderer_ = std::make_unique<Renderer>(Config::kScreenWidth,
-    //                                        Config::kScreenHeight);
+    CreateBackgound();
 
-    // Create the player
-    // CreateGameObject<PlayerInputComponent, PlayerPhysicsComponent,
-    //                  PlayerGraphicsComponent>(*this);
-
-    // // Create the background stars
-    // std::uniform_int_distribution<int> dist{0, std::numeric_limits<int>::max()};
-    // for (int i = 0; i < 500; i++) {
-    //     int x = dist(eng_) % Config::kScreenWidth;
-    //     int y = dist(eng_) % Config::kScreenHeight;
-    //     float speed = (10 + dist(eng_) % 20)*0.1f;
-    //     auto star = std::make_unique<Star>(this, -speed, Config::kScreenWidth);
-    //     star->SetPosition(x, y);
-    //     // bgStars_.emplace_back(std::move(star));
-    //     bgStars_.emplace_back(std::move(star));
-    // }
-
-    // // Create the player
-    // auto player = std::make_unique<Player>(this);
-    // SDL_FPoint start_pos{100.0f, 100.0f};
-    // player->SetPosition(start_pos);
-    // player->health = kPlayerHealth;
-    // // player_ = player.get();
-    // AddActor(std::move(player));
-
+    //Create the player
     // Get texture for player
     Texture *texture = renderer_.GetTexture(Config::kPlayerImage);
     // Create input component for player
@@ -130,13 +73,6 @@ void Game::Run()
     Uint32 frame_end;
     Uint32 frame_duration;
     int frame_count = 0;
-
-#if 0
-    player_->SetPosition(100, 100);
-    player_->side = Entity::Side::kPlayer;
-    player_->health = 2;
-#endif
-
 
     while (running_) {
         frame_start = SDL_GetTicks();
@@ -194,11 +130,6 @@ void Game::Input() {
         }
     }
 
-    // if (state_ == kPlay) {
-    //     for (auto &actor: actors_) {
-    //         actor->ProcessInput(keyboardState);
-    //     }
-    // }
     // NOTE: In this game only the player consumes input.
     //       So don't wasting time to iterate over all game objects...
     if (objs_.size() > 0 && state_ == kPlay) {
@@ -208,6 +139,10 @@ void Game::Input() {
 }
 
 void Game::Update() {
+
+    // Update background stars
+    background_->UpdatePhysics(*this);
+
     if (state_ == kPlay) {
         // Move pending game objects to objs_
         std::move(pendingObjs_.begin(), pendingObjs_.end(),
@@ -268,84 +203,6 @@ void Game::Update() {
             player->health = kPlayerHealth;
         }
     }
-
-    // Move pending game objects to objs_
-    // objs_.insert(pendingObjs_.end(),
-    //              std::make_move_iterator(pendingObjs_.begin()),
-    //              std::make_move_iterator(pendingObjs_.end()));
-    //pendingObjs_.clear();
-
-    // Add pending game objects to objs_
-    // std::reverse(pendingObjs_.begin(), pendingObjs_.end());
-    // while (pendingObjs_.empty() == false) {
-    //     objs_.emplace_back(std::move(pendingObjs_.back()));
-    //     pendingObjs_.pop_back();
-    // }
-
-    // // Update background stars
-    // for (auto &star: bgStars_) {
-    //     star->Update();
-    // }
-
-    // if (state_ == kPlay) {
-
-    //     for (auto &actor: actors_) {
-    //         actor->Update();
-    //     }
-
-    //     for (auto &bullet: bullets_) {
-    //         bullet->Update();
-    //         DetectBulletCollision(bullet.get());
-    //     }
-
-    //     SpawnAliens();
-
-    //     // Add pending actors
-    //     std::reverse(pendingActors_.begin(), pendingActors_.end());
-    //     while (pendingActors_.empty() == false) {
-    //         actors_.emplace_back(std::move(pendingActors_.back()));
-    //         pendingActors_.pop_back();
-    //     }
-
-
-    //     auto &player = actors_[0];
-
-    //     if (remainingLives_ < 0) {
-    //         state_ = kPause;
-    //         actors_.erase(actors_.begin()+1, actors_.end());
-    //         bullets_.erase(bullets_.begin(), bullets_.end());
-    //         return;
-    //     } else if (player->health <= 0) {
-    //         state_ = kRespawn;
-    //         actors_.erase(actors_.begin()+1, actors_.end());
-    //         bullets_.erase(bullets_.begin(), bullets_.end());
-    //         remainingLives_--;
-    //         return;
-    //     }
-
-    //     // Add pending bullets
-    //     std::reverse(pendingBullets_.begin(), pendingBullets_.end());
-    //     while (pendingBullets_.empty() == false) {
-    //         bullets_.emplace_back(std::move(pendingBullets_.back()));
-    //         pendingBullets_.pop_back();
-    //     }
-
-    //     // Remove died actors, [0] is our player so don't remove him
-    //     actors_.erase(std::remove_if(actors_.begin()+1, actors_.end(),
-    //         [](auto const &a){ return a->isAlive == false; }), actors_.end());
-
-    //     // Remove hitting bullets
-    //     bullets_.erase(std::remove_if(bullets_.begin(), bullets_.end(),
-    //         [](auto const &a){ return a->isAlive == false; }), bullets_.end());
-    // } else if (state_ == kRespawn) {
-    //     if (--respawnTimer_ <= 0){
-    //         auto &player = actors_[0];
-    //         state_ = kPlay;
-    //         respawnTimer_ = kRespawnTime;
-    //         player->isAlive = true;
-    //         player->health = kPlayerHealth;
-    //     }
-    // }
 }
 
 void Game::Output() {
@@ -446,10 +303,13 @@ void Game::SpawnAliens() {
         obj->side = GameObject::Side::kAlien;
         // Add alien to game
         AddGameObject(std::move(obj));
+        // Reset spwan timer
         alienSpawnTimer_ = random_timer_(eng_);
     }
 }
 
+
+// TODO: REFACTOR
 void Game::DetectBulletCollision(GameObject *bullet) {
     // Bullets can only hit once
     if (bullet->health <= 0)
@@ -482,4 +342,21 @@ void Game::DetectBulletCollision(GameObject *bullet) {
             }
         }
     }
+}
+
+void Game::CreateBackgound() {
+    // Create input component for star
+    auto input = std::make_unique<NoneInputComponent>();
+    // Create physics component for star
+    auto physics = std::make_unique<StarPhysicsComponent>(*this);
+    // Create graphics component for star
+    auto graphics = std::make_unique<StarGraphicsComponent>(physics.get());
+    // Create star object
+    background_ = std::make_unique<GameObject>(std::move(input),
+                                            std::move(physics),
+                                            std::move(graphics));
+    // Register the star to the renderer system
+    renderer_.RegisterGameObjects(background_.get());
+    // Set stars side
+    background_->side = GameObject::Side::kNeutral;
 }
