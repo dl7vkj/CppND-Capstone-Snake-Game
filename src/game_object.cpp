@@ -2,7 +2,6 @@
 
 #include "renderer.h"
 #include "game.h"
-#include "controller.h"
 
 
 void GameObject::ProcessInput(const uint8_t *keyboard_state) {

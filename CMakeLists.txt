@@ -16,7 +16,7 @@ include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} src)
 add_executable(SnakeGame
     src/main.cpp
     src/game.cpp
-    src/controller.cpp
+    # src/controller.cpp
     src/renderer.cpp
     # src/component.cpp
     # src/texture_component.cpp

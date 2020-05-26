@@ -34,6 +34,8 @@ public:
     void AddBullet(std::unique_ptr<GameObject> obj) {
         bullets_.emplace_back(std::move(obj));
     }
+    void Clear();
+
     // void AddActor(std::unique_ptr<Actor> actor) {
     //     pendingActors_.emplace_back(std::move(actor));
     // }

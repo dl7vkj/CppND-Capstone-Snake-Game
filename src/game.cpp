@@ -117,7 +117,7 @@ Game::Game()
     // Set players side
     obj->side = GameObject::Side::kPlayer;
     // Set players health
-    obj->health = 5;
+    obj->health = kPlayerHealth;
     // Add player to game
     AddGameObject(std::move(obj));
 }
@@ -182,16 +182,17 @@ void Game::Input() {
     }
     const uint8_t *keyboardState = SDL_GetKeyboardState(NULL);
 
-    // if (state_ == kPause) {
-    //     if (keyboardState[SDL_SCANCODE_SPACE]) {
-    //         auto &player = actors_[0];
-    //         player->isAlive = true;
-    //         player->health = kPlayerHealth;
-    //         remainingLives_ = kRemainingLives;
-    //         player->SetPosition(100, renderer_->GetScreenHeight()/2);
-    //         state_ = kPlay;
-    //     }
-    // }
+    if (state_ == kPause) {
+        if (keyboardState[SDL_SCANCODE_SPACE]) {
+            auto &player = objs_[0];
+            player->isAlive = true;
+            player->health = kPlayerHealth;
+            remainingLives_ = kRemainingLives;
+            player->x = 100;
+            player->y = renderer_.GetScreenHeight()/2;
+            state_ = kPlay;
+        }
+    }
 
     // if (state_ == kPlay) {
     //     for (auto &actor: actors_) {
@@ -200,50 +201,73 @@ void Game::Input() {
     // }
     // NOTE: In this game only the player consumes input.
     //       So don't wasting time to iterate over all game objects...
-    if (objs_.size() > 0) {
+    if (objs_.size() > 0 && state_ == kPlay) {
         auto &player = objs_[0];
         player->ProcessInput(keyboardState);
     }
 }
 
 void Game::Update() {
+    if (state_ == kPlay) {
+        // Move pending game objects to objs_
+        std::move(pendingObjs_.begin(), pendingObjs_.end(),
+                    std::back_inserter(objs_));
+        pendingObjs_.clear();
 
-    // Move pending game objects to objs_
-    std::move(pendingObjs_.begin(), pendingObjs_.end(), std::back_inserter(objs_));
-    pendingObjs_.clear();
+        // Update game objects
+        for (auto &obj: objs_) {
+            obj->UpdatePhysics(*this);
+        }
+        // Update bullets
+        for (auto &bullet: bullets_) {
+            bullet->UpdatePhysics(*this);
+            DetectBulletCollision(bullet.get());
+        }
 
-    // Update game objects
-    for (auto &obj: objs_) {
-        obj->UpdatePhysics(*this);
+        // Remove died bullets and unregister them from renderer
+        bullets_.erase(std::remove_if(bullets_.begin(), bullets_.end(),
+            [&](auto const &x){
+                if (!x->isAlive) {
+                    renderer_.UnregisterGameObjects(x.get());
+                    return true;
+                }
+                return false;
+            }), bullets_.end());
+
+        // Remove & Unregister died GameObjects
+        // objs_[0] is our player so don't remove him
+        objs_.erase(std::remove_if(objs_.begin()+1, objs_.end(),
+            [&](auto const &x){
+                if (!x->isAlive) {
+                    renderer_.UnregisterGameObjects(x.get());
+                    return true;
+                }
+                return false;
+            }), objs_.end());
+
+        auto &player = objs_[0];
+
+        if (remainingLives_ < 0) {
+            state_ = kPause;
+            Clear();
+            return;
+        } else if (player->health <= 0) {
+            state_ = kRespawn;
+            Clear();
+            remainingLives_--;
+            return;
+        }
+
+        SpawnAliens();
+    } else if (state_ == kRespawn) {
+        if (--respawnTimer_ <= 0){
+            auto &player = objs_[0];
+            state_ = kPlay;
+            respawnTimer_ = kRespawnTime;
+            player->isAlive = true;
+            player->health = kPlayerHealth;
+        }
     }
-    // Update bullets
-    for (auto &bullet: bullets_) {
-        bullet->UpdatePhysics(*this);
-        DetectBulletCollision(bullet.get());
-    }
-
-    // Remove died bullets and unregister them from renderer
-    bullets_.erase(std::remove_if(bullets_.begin(), bullets_.end(),
-        [&](auto const &x){
-            if (!x->isAlive) {
-                renderer_.UnregisterGameObjects(x.get());
-                return true;
-            }
-            return false;
-        }), bullets_.end());
-
-    // Remove & Unregister died GameObjects
-    // objs_[0] is our player so don't remove him
-    objs_.erase(std::remove_if(objs_.begin()+1, objs_.end(),
-        [&](auto const &x){
-            if (!x->isAlive) {
-                renderer_.UnregisterGameObjects(x.get());
-                return true;
-            }
-            return false;
-        }), objs_.end());
-
-    SpawnAliens();
 
     // Move pending game objects to objs_
     // objs_.insert(pendingObjs_.end(),
@@ -326,6 +350,30 @@ void Game::Update() {
 
 void Game::Output() {
     renderer_.Render();
+}
+
+void Game::Clear() {
+    // Remove & Unregister pending GameObjects
+    pendingObjs_.erase(std::remove_if(pendingObjs_.begin(), pendingObjs_.end(),
+        [&](auto const &x){
+            renderer_.UnregisterGameObjects(x.get());
+            return true;
+        }), pendingObjs_.end());
+
+    // Remove bullets and unregister them from renderer
+    bullets_.erase(std::remove_if(bullets_.begin(), bullets_.end(),
+        [&](auto const &x){
+            renderer_.UnregisterGameObjects(x.get());
+            return true;
+        }), bullets_.end());
+
+    // Remove & Unregister GameObjects
+    // objs_[0] is our player so don't remove him
+    objs_.erase(std::remove_if(objs_.begin()+1, objs_.end(),
+        [&](auto const &x){
+            renderer_.UnregisterGameObjects(x.get());
+            return true;
+        }), objs_.end());
 }
 
 void Game::FireBullet(float x, float y, float dx, float dy,
