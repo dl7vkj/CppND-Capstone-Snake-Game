@@ -7,7 +7,7 @@
 class NoneInputComponent : public InputComponent {
 public:
     void Update(class GameObject &obj[[maybe_unused]],
-                class Controller const &controller[[maybe_unused]]) override {}
+                const uint8_t *keyboard_state[[maybe_unused]]) override {}
 };
 
 

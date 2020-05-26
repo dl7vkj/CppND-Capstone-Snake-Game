@@ -5,12 +5,12 @@
 #include "controller.h"
 
 
-void GameObject::ProcessInput(class Controller const &controller) {
-    input_->Update(*this, controller);
+void GameObject::ProcessInput(const uint8_t *keyboard_state) {
+    input_->Update(*this, keyboard_state);
 }
 
-void GameObject::UpdatePhysics() {
-
+void GameObject::UpdatePhysics(Game &game) {
+    physics_->Update(*this, game);
 }
 
 void GameObject::UpdateGraphics(class Renderer &renderer) {

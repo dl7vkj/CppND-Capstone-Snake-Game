@@ -9,10 +9,12 @@
 
 class GameObject {
 public:
-    float x{0.0f};
-    float y{0.0f};
-    float dx{0.0f};
-    float dy{0.0f};
+    float x{0.0f};  // x position
+    float y{0.0f};  // y position
+    float dx{0.0f}; // x velocity
+    float dy{0.0f}; // y velocity
+    // int w{0};       // width
+    // int h{0};       // height
 
     GameObject(std::unique_ptr<InputComponent> input,
                std::unique_ptr<PhysicsComponent> physics,
@@ -22,8 +24,8 @@ public:
       graphics_(std::move(graphics))
     {}
 
-    void ProcessInput(class Controller const &controller);
-    void UpdatePhysics();
+    void ProcessInput(const uint8_t *keyboard_state);
+    void UpdatePhysics(class Game &game);
     void UpdateGraphics(class Renderer &renderer);
 
 private:

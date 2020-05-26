@@ -97,7 +97,10 @@ Game::Game()
     // Create input component for player
     auto input = std::make_unique<PlayerInputComponent>();
     // Create physics component for player
-    auto physics = std::make_unique<PlayerPhysicsComponent>();
+    auto physics = std::make_unique<PlayerPhysicsComponent>(texture->GetWidth(),
+                                                            texture->GetHeight(),
+                                                            Config::kScreenWidth,
+                                                            Config::kScreenHeight);
     // Create graphics component for player
     auto graphics = std::make_unique<PlayerGraphicsComponent>(texture);
     // Create player game object and move components to game object
@@ -106,6 +109,12 @@ Game::Game()
                                             std::move(graphics));
     // Register the player to the renderer system
     renderer_.RegisterGameObjects(obj.get());
+    // Set players position
+    obj->x = 100;
+    obj->y = Config::kScreenHeight/2;
+    // Set players dimensions
+    // obj->w = texture->GetWidth();
+    // obj->h = texture->GetHeight();
     // Add player to game
     AddGameObject(std::move(obj));
 }
@@ -186,6 +195,12 @@ void Game::Input() {
     //         actor->ProcessInput(keyboardState);
     //     }
     // }
+    // NOTE: In this game only the player consumes input.
+    //       So don't wasting time to iterate over all game objects...
+    if (objs_.size() > 0) {
+        auto &player = objs_[0];
+        player->ProcessInput(keyboardState);
+    }
 }
 
 void Game::Update() {
@@ -193,6 +208,11 @@ void Game::Update() {
     // Move pending game objects to objs_
     std::move(pendingObjs_.begin(), pendingObjs_.end(), std::back_inserter(objs_));
     pendingObjs_.clear();
+
+    // Update game objects physics
+    for (auto &obj: objs_) {
+        obj->UpdatePhysics(*this);
+    }
 
     // Move pending game objects to objs_
     // objs_.insert(pendingObjs_.end(),
