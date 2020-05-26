@@ -5,7 +5,7 @@
 
 #include "actor.h"
 #include "render_component.h"
-#include "sdl_texture.h"
+#include "texture.h"
 
 
 class TextureComponent : public RenderComponent {

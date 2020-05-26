@@ -10,7 +10,7 @@
 #include "SDL.h"
 
 #include "config.h"
-#include "sdl_texture.h"
+#include "texture.h"
 // #include "SDL_ttf.h"
 
 // #include "actor.h"
@@ -93,7 +93,7 @@ Game::Game()
     // AddActor(std::move(player));
 
     // Get texture for player
-    SDLTexture *texture = renderer_.GetTexture(Config::kPlayerImage);
+    Texture *texture = renderer_.GetTexture(Config::kPlayerImage);
     // Create input component for player
     auto input = std::make_unique<PlayerInputComponent>();
     // Create physics component for player

@@ -2,14 +2,14 @@
 #define TEXTURE_GRAPHICS_COMPONENT_H
 
 #include "graphics_component.h"
-#include "sdl_texture.h"
+#include "texture.h"
 
 class TextureGraphicsComponent : public GraphicsComponent {
 public:
-    TextureGraphicsComponent(SDLTexture *texture) : texture_(texture) {}
+    TextureGraphicsComponent(Texture *texture) : texture_(texture) {}
     void Update(class GameObject &obj, class Renderer &renderer) override;
 private:
-    SDLTexture *texture_;
+    Texture *texture_;
 };
 
 #endif // TEXTURE_GRAPHICS_COMPONENT_H

@@ -10,7 +10,7 @@
 
 // #include "player.h"
 // #include "entity.h"
-#include "sdl_texture.h"
+#include "texture.h"
 // #include "render_component.h"
 // #include "star.h"
 
@@ -34,7 +34,7 @@ public:
 
 
     // Note: Return as pointer, so caller can check if nullptr returned
-    SDLTexture *GetTexture(std::string filename) {
+    Texture *GetTexture(std::string filename) {
         // TODO: Return nullptr if we can not load the texture
         auto result = textures_.find(filename);
         if (result != textures_.end()) {
@@ -46,7 +46,7 @@ public:
             // Create texture
             SDL_LogMessage(SDL_LOG_CATEGORY_RENDER, SDL_LOG_PRIORITY_DEBUG,
                        "Load texture %s", filename.c_str());
-            textures_.emplace(filename, std::make_unique<SDLTexture>(filename,
+            textures_.emplace(filename, std::make_unique<Texture>(filename,
                 *sdl_renderer));
             return textures_[filename].get();
 
@@ -85,7 +85,7 @@ public:
 private:
     SDL_Window *sdl_window;
     SDL_Renderer *sdl_renderer;
-    std::unordered_map<std::string, std::unique_ptr<SDLTexture>> textures_;
+    std::unordered_map<std::string, std::unique_ptr<Texture>> textures_;
     std::vector<GameObject*> gameObjects_;
     // std::vector<RenderComponent*> textureComponents_;
     // std::vector<std::unique_ptr<Star>> bgStars_;

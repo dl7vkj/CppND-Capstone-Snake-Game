@@ -5,7 +5,7 @@
 #include "config.h"
 #include "game.h"
 #include "renderer.h"
-#include "sdl_texture.h"
+#include "texture.h"
 #include "texture_component.h"
 #include "fence_component.h"
 #include "bullet_actor.h"

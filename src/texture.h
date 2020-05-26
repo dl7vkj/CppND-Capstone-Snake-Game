@@ -1,5 +1,5 @@
-#ifndef SDL_TEXTURE_H
-#define SDL_TEXTURE_H
+#ifndef TEXTURE_H
+#define TEXTURE_H
 
 #include <string>
 #include <memory>
@@ -8,10 +8,10 @@
 #include "SDL_image.h"
 
 
-class SDLTexture {
+class Texture {
 // TODO: Rule of five
 public:
-    SDLTexture (std::string const &filename, SDL_Renderer &sdl_renderer)
+    Texture (std::string const &filename, SDL_Renderer &sdl_renderer)
     : renderer_(sdl_renderer)
     {
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO,
@@ -48,4 +48,4 @@ private:
     int height_;
 };
 
-#endif // SDL_TEXTURE_H
+#endif // TEXTURE_H

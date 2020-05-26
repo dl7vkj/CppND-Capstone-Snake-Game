@@ -32,7 +32,7 @@ private:
 
 #include "config.h"
 #include "entity.h"
-#include "sdl_texture.h"
+#include "texture.h"
 
 
 class Player : public Entity {
