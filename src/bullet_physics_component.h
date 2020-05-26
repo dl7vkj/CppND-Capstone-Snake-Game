@@ -12,7 +12,10 @@ public:void Update(GameObject &obj, Game &game) override {
         // Get the screen size
         int screen_w = game.GetRenderer().GetScreenWidth();
         int screen_h = game.GetRenderer().GetScreenHeight();
-
+        if (obj.health <= 0) {
+            obj.isAlive = false;
+            return;
+        }
         if (obj.x > game.GetRenderer().GetScreenWidth()) {
             obj.isAlive = false;
         } else if (obj.x < -obj.w) {

@@ -40,7 +40,15 @@ public:
     // void AddBullet(std::unique_ptr<BulletActor> bullet) {
     //     pendingBullets_.emplace_back(std::move(bullet));
     // }
-    // SDL_Rect GetPlayerRect() { return actors_[0]->GetRect(); }
+    SDL_Rect GetPlayerRect() {
+        auto &player = objs_[0];
+        SDL_Rect retval;
+        retval.x = player->x;
+        retval.y = player->y;
+        retval.w = player->w;
+        retval.h = player->h;
+        return retval;
+    }
     void FireBullet(float x, float y, float dx, float dy,
                     GameObject::Side side);
     int GetRandomAlienBulletReloadTime() { return random_alien_bullet_(eng_); }
@@ -56,8 +64,8 @@ private:
     void Update();
     void Output();
 
-    // void DetectBulletCollision(BulletActor *bullet);
-    // void SpawnAliens();
+    void DetectBulletCollision(GameObject *bullet);
+    void SpawnAliens();
 
     // std::unique_ptr<Renderer> renderer_;
     Renderer renderer_;

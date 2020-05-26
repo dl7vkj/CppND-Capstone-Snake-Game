@@ -20,6 +20,7 @@ public:
     Side side{kNeutral};
     bool fireBullet{false};
     bool isAlive{true};
+    int health{1};
 
     GameObject(std::unique_ptr<InputComponent> input,
                std::unique_ptr<PhysicsComponent> physics,

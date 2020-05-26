@@ -29,7 +29,8 @@ public:
             obj.y = max_y;
         }
 
-        if (obj.fireBullet) {
+        if (--reload <= 0 && obj.fireBullet) {
+            reload = kReloadTime;
             obj.fireBullet = false;
             float x = obj.x + obj.w;
             float y = obj.y + (obj.h / 2.0f);// - (bullet->GetSize().y / 2);
@@ -37,6 +38,10 @@ public:
                             GameObject::Side::kPlayer);
         }
     };
+
+private:
+    static constexpr int kReloadTime{8};
+    int reload{0};
 };
 
 

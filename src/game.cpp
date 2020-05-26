@@ -29,6 +29,7 @@
 #include "player_physics_component.h"
 #include "texture_graphics_component.h"
 #include "bullet_physics_component.h"
+#include "alien_physics_component.h"
 
 
 // template <typename A, typename B, typename C>
@@ -59,7 +60,7 @@
 Game::Game()
   : renderer_(Config::kScreenWidth, Config::kScreenHeight),
     eng_(dev_()),
-    random_y_(0, Config::kScreenHeight),
+    random_y_(0, Config::kScreenHeight - 32),
     random_dx_(-6.0f, -3.5f),
     random_dy_(-2.0f, +2.0f),
     random_timer_(30, 90),
@@ -113,8 +114,10 @@ Game::Game()
     // Set players dimensions
     obj->w = texture->GetWidth();
     obj->h = texture->GetHeight();
-    // Set payers side
+    // Set players side
     obj->side = GameObject::Side::kPlayer;
+    // Set players health
+    obj->health = 5;
     // Add player to game
     AddGameObject(std::move(obj));
 }
@@ -151,7 +154,7 @@ void Game::Run()
         // TODO: Move to output
         // After every second, update the window title.
         if (frame_end - title_timestamp >= 1000) {
-            // renderer_->UpdateWindowTitle(actors_[0]->health, score_, remainingLives_, frame_count);
+            renderer_.UpdateWindowTitle(objs_[0]->health, score_, remainingLives_, frame_count);
             frame_count = 0;
             title_timestamp = frame_end;
         }
@@ -216,20 +219,31 @@ void Game::Update() {
     // Update bullets
     for (auto &bullet: bullets_) {
         bullet->UpdatePhysics(*this);
+        DetectBulletCollision(bullet.get());
     }
 
     // Remove died bullets and unregister them from renderer
     bullets_.erase(std::remove_if(bullets_.begin(), bullets_.end(),
-        [&](auto const &a){
-            if (!a->isAlive) {
-                renderer_.UnregisterGameObjects(a.get());
+        [&](auto const &x){
+            if (!x->isAlive) {
+                renderer_.UnregisterGameObjects(x.get());
                 return true;
             }
             return false;
-
-            return a->isAlive == false;
-
         }), bullets_.end());
+
+    // Remove & Unregister died GameObjects
+    // objs_[0] is our player so don't remove him
+    objs_.erase(std::remove_if(objs_.begin()+1, objs_.end(),
+        [&](auto const &x){
+            if (!x->isAlive) {
+                renderer_.UnregisterGameObjects(x.get());
+                return true;
+            }
+            return false;
+        }), objs_.end());
+
+    SpawnAliens();
 
     // Move pending game objects to objs_
     // objs_.insert(pendingObjs_.end(),
@@ -339,7 +353,11 @@ void Game::FireBullet(float x, float y, float dx, float dy,
     obj->w = texture->GetWidth();
     obj->h = texture->GetHeight();
     // Set bullets position
-    obj->x = x;
+    if (side == GameObject::Side::kPlayer) {
+        obj->x = x;
+    } else {
+        obj->x = x - (obj->w / 2.0f);
+    }
     obj->y = y - (obj->h / 2.0f);
     // Set bullets velocity
     obj->dx = dx;
@@ -350,30 +368,70 @@ void Game::FireBullet(float x, float y, float dx, float dy,
     AddBullet(std::move(obj));
 }
 
+void Game::SpawnAliens() {
+    if (--alienSpawnTimer_ <= 0) {
+        // Create an alien
+        // Get texture for alien
+        Texture *texture = renderer_.GetTexture(Config::kEnemyImage);
+        // Create input component for alien
+        auto input = std::make_unique<NoneInputComponent>();
+        // Create physics component for alien
+        auto physics = std::make_unique<AlienPhysicsComponent>();
+        // Create graphics component for alien
+        auto graphics = std::make_unique<TextureGraphicsComponent>(texture);
+        // Create alien game object
+        auto obj = std::make_unique<GameObject>(std::move(input),
+                                                std::move(physics),
+                                                std::move(graphics));
+        // Register the alien to the renderer system
+        renderer_.RegisterGameObjects(obj.get());
+        // Set aliens dimensions
+        obj->w = texture->GetWidth();
+        obj->h = texture->GetHeight();
+        // Set aliens position
+        obj->x = renderer_.GetScreenWidth();
+        obj->y = random_y_(eng_);
+        // Set aliens velocity
+        obj->dx = random_dx_(eng_);
+        obj->dy = random_dy_(eng_);
+        // Set aliens side
+        obj->side = GameObject::Side::kAlien;
+        // Add alien to game
+        AddGameObject(std::move(obj));
+        alienSpawnTimer_ = random_timer_(eng_);
+    }
+}
 
-// void Game::SpawnAliens() {
-//     if (--alienSpawnTimer_ <= 0) {
-//         // Create the alien
-//         auto alien = std::make_unique<AlienActor>(this);
-//         alien->SetPosition(renderer_->GetScreenWidth(), random_y_(eng_));
-//         alien->SetVelocity(random_dx_(eng_), random_dy_(eng_));
-//         AddActor(std::move(alien));
-//         alienSpawnTimer_ = random_timer_(eng_);
-//     }
-// }
-
-// void Game::DetectBulletCollision(BulletActor *bullet) {
-//     for (auto &actor: actors_) {
-//         if (bullet->health > 0 && bullet->side != actor->side) {
-//             SDL_Rect a{actor->GetRect()};
-//             SDL_Rect b{bullet->GetRect()};
-//             if (SDL_HasIntersection(&a, &b)) {
-//                 actor->health--;
-//                 bullet->health--;
-//                 if (actor->side == Actor::Side::kAlien) {
-//                     score_++;
-//                 }
-//             }
-//         }
-//     }
-// }
+void Game::DetectBulletCollision(GameObject *bullet) {
+    // Bullets can only hit once
+    if (bullet->health <= 0)
+        return;
+    // Iterate over all GameObjects
+    for (auto &obj: objs_) {
+        // No friendly fire.
+        if (bullet->side != obj->side) {
+            SDL_Rect a;
+            SDL_Rect b;
+            // Area of GameObject
+            a.x = static_cast<int>(obj->x);
+            a.y = static_cast<int>(obj->y);
+            a.w = obj->w;
+            a.h = obj->h;
+            // Area of bullet
+            b.x = static_cast<int>(bullet->x);
+            b.y = static_cast<int>(bullet->y);
+            b.w = bullet->w;
+            b.h = bullet->h;
+            // Check if both areas intersect
+            if (SDL_HasIntersection(&a, &b)) {
+                // yes, bullet hit target
+                obj->health--;
+                bullet->health--;
+                if (obj->side == GameObject::Side::kAlien) {
+                    // We hit an alien!
+                    score_++;
+                }
+            }
+        }
+    }
+}

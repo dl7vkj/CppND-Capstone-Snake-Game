@@ -94,7 +94,7 @@ void Renderer::Render(Player &player, std::list<Entity> &entities,
 void Renderer::UpdateWindowTitle(int health, int score, int life, int fps)
 {
     std::ostringstream stream;
-    stream << "[ Health: " << health << " | Score: " << score << " | Life: " << life << " | FPS: " << fps << " ]";
+    stream << "[ HEALTH " << health << " | SCORE " << score << " | LIVES " << life << " | FPS " << fps << " ]";
     // std::string title{"FPS: " + std::to_string(fps)};
     SDL_SetWindowTitle(sdl_window, stream.str().c_str());
 }
