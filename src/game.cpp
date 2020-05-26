@@ -28,6 +28,7 @@
 #include "player_input_component.h"
 #include "player_physics_component.h"
 #include "texture_graphics_component.h"
+#include "bullet_physics_component.h"
 
 
 // template <typename A, typename B, typename C>
@@ -97,13 +98,10 @@ Game::Game()
     // Create input component for player
     auto input = std::make_unique<PlayerInputComponent>();
     // Create physics component for player
-    auto physics = std::make_unique<PlayerPhysicsComponent>(texture->GetWidth(),
-                                                            texture->GetHeight(),
-                                                            Config::kScreenWidth,
-                                                            Config::kScreenHeight);
+    auto physics = std::make_unique<PlayerPhysicsComponent>();
     // Create graphics component for player
     auto graphics = std::make_unique<TextureGraphicsComponent>(texture);
-    // Create player game object and move components to game object
+    // Create player game object
     auto obj = std::make_unique<GameObject>(std::move(input),
                                             std::move(physics),
                                             std::move(graphics));
@@ -113,8 +111,10 @@ Game::Game()
     obj->x = 100;
     obj->y = Config::kScreenHeight/2;
     // Set players dimensions
-    // obj->w = texture->GetWidth();
-    // obj->h = texture->GetHeight();
+    obj->w = texture->GetWidth();
+    obj->h = texture->GetHeight();
+    // Set payers side
+    obj->side = GameObject::Side::kPlayer;
     // Add player to game
     AddGameObject(std::move(obj));
 }
@@ -209,10 +209,27 @@ void Game::Update() {
     std::move(pendingObjs_.begin(), pendingObjs_.end(), std::back_inserter(objs_));
     pendingObjs_.clear();
 
-    // Update game objects physics
+    // Update game objects
     for (auto &obj: objs_) {
         obj->UpdatePhysics(*this);
     }
+    // Update bullets
+    for (auto &bullet: bullets_) {
+        bullet->UpdatePhysics(*this);
+    }
+
+    // Remove died bullets and unregister them from renderer
+    bullets_.erase(std::remove_if(bullets_.begin(), bullets_.end(),
+        [&](auto const &a){
+            if (!a->isAlive) {
+                renderer_.UnregisterGameObjects(a.get());
+                return true;
+            }
+            return false;
+
+            return a->isAlive == false;
+
+        }), bullets_.end());
 
     // Move pending game objects to objs_
     // objs_.insert(pendingObjs_.end(),
@@ -296,6 +313,43 @@ void Game::Update() {
 void Game::Output() {
     renderer_.Render();
 }
+
+void Game::FireBullet(float x, float y, float dx, float dy,
+                      GameObject::Side side) {
+    // Get texture for bullet
+    Texture *texture;
+    if (side == GameObject::Side::kPlayer) {
+        texture = renderer_.GetTexture(Config::kBulletImage);
+    } else {
+        texture = renderer_.GetTexture(Config::kAlienBulletImage);
+    }
+    // Create input component for bullet
+    auto input = std::make_unique<NoneInputComponent>();
+    // Create physics component for bullet
+    auto physics = std::make_unique<BulletPhysicsComponent>();
+    // Create graphics component for bullet
+    auto graphics = std::make_unique<TextureGraphicsComponent>(texture);
+    // Create bullet game object
+    auto obj = std::make_unique<GameObject>(std::move(input),
+                                            std::move(physics),
+                                            std::move(graphics));
+    // Register the bullet to the renderer system
+    renderer_.RegisterGameObjects(obj.get());
+    // Set bullets dimensions
+    obj->w = texture->GetWidth();
+    obj->h = texture->GetHeight();
+    // Set bullets position
+    obj->x = x;
+    obj->y = y - (obj->h / 2.0f);
+    // Set bullets velocity
+    obj->dx = dx;
+    obj->dy = dy;
+    // Set bullets side
+    obj->side = side;
+    // Add bullet to game
+    AddBullet(std::move(obj));
+}
+
 
 // void Game::SpawnAliens() {
 //     if (--alienSpawnTimer_ <= 0) {

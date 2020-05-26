@@ -21,12 +21,9 @@ public:
         if (keyboard_state[SDL_SCANCODE_RIGHT]) {
            obj.dx = 4.0f;
         }
-        // if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-        //     if (--reloadTime_ <= 0) {
-        //         FireBullet();
-        //         reloadTime_ = kReloadTime;
-        //     }
-        // }
+        if (keyboard_state[SDL_SCANCODE_LCTRL]) {
+            obj.fireBullet = true;
+        }
     }
 };
 

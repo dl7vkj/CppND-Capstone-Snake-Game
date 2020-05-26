@@ -31,6 +31,9 @@ public:
     void AddGameObject(std::unique_ptr<GameObject> obj) {
         pendingObjs_.emplace_back(std::move(obj));
     }
+    void AddBullet(std::unique_ptr<GameObject> obj) {
+        bullets_.emplace_back(std::move(obj));
+    }
     // void AddActor(std::unique_ptr<Actor> actor) {
     //     pendingActors_.emplace_back(std::move(actor));
     // }
@@ -38,6 +41,8 @@ public:
     //     pendingBullets_.emplace_back(std::move(bullet));
     // }
     // SDL_Rect GetPlayerRect() { return actors_[0]->GetRect(); }
+    void FireBullet(float x, float y, float dx, float dy,
+                    GameObject::Side side);
     int GetRandomAlienBulletReloadTime() { return random_alien_bullet_(eng_); }
     // int GetScore() const;
     // int GetSize() const;
@@ -58,6 +63,7 @@ private:
     Renderer renderer_;
     std::vector<std::unique_ptr<GameObject>> objs_{};
     std::vector<std::unique_ptr<GameObject>> pendingObjs_{};
+    std::vector<std::unique_ptr<GameObject>> bullets_{};
     // std::vector<std::unique_ptr<Actor>> actors_{};
     // std::vector<std::unique_ptr<Actor>> pendingActors_{};
     // std::vector<std::unique_ptr<BulletActor>> bullets_{};

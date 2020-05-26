@@ -9,12 +9,17 @@
 
 class GameObject {
 public:
+    enum Side{ kPlayer, kAlien, kNeutral};
+
     float x{0.0f};  // x position
     float y{0.0f};  // y position
     float dx{0.0f}; // x velocity
     float dy{0.0f}; // y velocity
-    // int w{0};       // width
-    // int h{0};       // height
+    int w{0};       // width
+    int h{0};       // height
+    Side side{kNeutral};
+    bool fireBullet{false};
+    bool isAlive{true};
 
     GameObject(std::unique_ptr<InputComponent> input,
                std::unique_ptr<PhysicsComponent> physics,

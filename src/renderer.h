@@ -69,6 +69,8 @@ public:
     void RegisterGameObjects(GameObject *game_object) {
         if (nullptr == game_object)
             return;
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO,
+                       "Register GameObject");
         gameObjects_.push_back(game_object);
     }
 
@@ -77,6 +79,8 @@ public:
             std::remove_if(gameObjects_.begin(), gameObjects_.end(),
             [&](auto const &x){ return x == game_object; }),
             gameObjects_.end());
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO,
+                       "Unregister GameObject");
     }
 
     std::size_t GetScreenWidth() const { return screenWidth_; }
