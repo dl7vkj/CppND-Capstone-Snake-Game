@@ -1,7 +1,7 @@
 #ifndef TEXTURE_GRAPHICS_COMPONENT_H
 #define TEXTURE_GRAPHICS_COMPONENT_H
 
-#include "graphics_component.h"
+#include "component.h"
 #include "texture.h"
 
 class TextureGraphicsComponent : public GraphicsComponent {

@@ -5,10 +5,9 @@
 #include <vector>
 #include <iostream>
 
-#include "input_component.h"
-#include "physics_component.h"
-#include "graphics_component.h"
+#include "component.h"
 
+// RUBRIC: Classes follow an appropriate inheritance hierarchy.
 
 class GameObject {
 public:
@@ -26,11 +25,9 @@ public:
     int health{1};
 
     GameObject();
-    GameObject(std::unique_ptr<InputComponent> input,
-               std::unique_ptr<PhysicsComponent> physics,
-               std::unique_ptr<GraphicsComponent> graphics);
     virtual ~GameObject() {}
 
+    // RUBRIC: Overloaded functions allow the same function to operate on different parameters.
     void AddComponent(std::unique_ptr<InputComponent> comp);
     void AddComponent(std::unique_ptr<PhysicsComponent> comp);
     void AddComponent(std::unique_ptr<GraphicsComponent> comp);
@@ -40,6 +37,7 @@ public:
     virtual void UpdateGraphics(class Renderer &renderer);
 
 private:
+    // RUBRIC: The project uses smart pointers instead of raw pointers.
     std::vector<std::unique_ptr<InputComponent>> inputComps_{};
     std::vector<std::unique_ptr<PhysicsComponent>> physicsComps_{};
     std::vector<std::unique_ptr<GraphicsComponent>> graphicsComps_{};

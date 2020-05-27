@@ -13,16 +13,14 @@
 #include "texture.h"
 
 #include "game_object.h"
-#include "none_input_component.h"
-#include "none_physics_component.h"
-#include "none_graphics_component.h"
-#include "player_input_component.h"
-#include "player_physics_component.h"
+#include "game_components.h"
+// #include "player_input_component.h"
+// #include "player_physics_component.h"
 #include "texture_graphics_component.h"
-#include "bullet_physics_component.h"
-#include "alien_physics_component.h"
-#include "star_physics_component.h"
-#include "star_graphics_component.h"
+// #include "bullet_physics_component.h"
+// #include "alien_physics_component.h"
+// #include "star_physics_component.h"
+// #include "star_graphics_component.h"
 
 
 Game::Game()
@@ -36,19 +34,19 @@ Game::Game()
 {
     CreateBackgound();
 
-    //Create the player
+    // Create the player
     // Get texture for player
     Texture *texture = renderer_.GetTextureHandle(Config::kPlayerImage);
-    // Create input component for player
+    // Create components for player
+    // RUBRIC: The project uses smart pointers instead of raw pointers.
     auto input = std::make_unique<PlayerInputComponent>();
-    // Create physics component for player
     auto physics = std::make_unique<PlayerPhysicsComponent>();
-    // Create graphics component for player
     auto graphics = std::make_unique<TextureGraphicsComponent>(texture);
     // Create player game object
-    auto obj = std::make_unique<GameObject>(std::move(input),
-                                            std::move(physics),
-                                            std::move(graphics));
+    auto obj = std::make_unique<GameObject>();
+    obj->AddComponent(std::move(input));
+    obj->AddComponent(std::move(physics));
+    obj->AddComponent(std::move(graphics));
     // Register the player to the renderer system
     renderer_.RegisterGameObjects(obj.get());
     // Set players position
@@ -57,13 +55,29 @@ Game::Game()
     // Set players dimensions
     obj->w = texture->GetWidth();
     obj->h = texture->GetHeight();
-    // Set players side
+
     obj->side = GameObject::Side::kPlayer;
-    // Set players health
     obj->health = kPlayerHealth;
+
     // Add player to game
     AddGameObject(std::move(obj));
 }
+
+SDL_Rect Game::GetPlayerRect() {
+    auto &player = objs_[0];
+    SDL_Rect retval;
+    retval.x = player->x;
+    retval.y = player->y;
+    retval.w = player->w;
+    retval.h = player->h;
+    return retval;
+}
+
+int Game::GetRandomAlienBulletReloadTime() {
+    return random_alien_bullet_(eng_);
+}
+
+Renderer &Game::GetRendererHandle() { return renderer_; }
 
 void Game::Run()
 {
@@ -105,6 +119,7 @@ void Game::Run()
 }
 
 void Game::Input() {
+    // RUBRIC: The project accepts user input and processes the input.
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         switch (event.type)
@@ -119,6 +134,7 @@ void Game::Input() {
     const uint8_t *keyboardState = SDL_GetKeyboardState(NULL);
 
     if (state_ == kPause) {
+        // Press space bar to play again
         if (keyboardState[SDL_SCANCODE_SPACE]) {
             auto &player = objs_[0];
             player->isAlive = true;
@@ -245,16 +261,15 @@ void Game::FireBullet(float x, float y, float dx, float dy,
     } else {
         texture = renderer_.GetTextureHandle(Config::kAlienBulletImage);
     }
-    // Create input component for bullet
-    auto input = std::make_unique<NoneInputComponent>();
+
     // Create physics component for bullet
     auto physics = std::make_unique<BulletPhysicsComponent>();
     // Create graphics component for bullet
     auto graphics = std::make_unique<TextureGraphicsComponent>(texture);
     // Create bullet game object
-    auto obj = std::make_unique<GameObject>(std::move(input),
-                                            std::move(physics),
-                                            std::move(graphics));
+    auto obj = std::make_unique<GameObject>();
+    obj->AddComponent(std::move(physics));
+    obj->AddComponent(std::move(graphics));
     // Register the bullet to the renderer system
     renderer_.RegisterGameObjects(obj.get());
     // Set bullets dimensions
@@ -281,16 +296,15 @@ void Game::SpawnAliens() {
         // Create an alien
         // Get texture for alien
         Texture *texture = renderer_.GetTextureHandle(Config::kEnemyImage);
-        // Create input component for alien
-        auto input = std::make_unique<NoneInputComponent>();
+
         // Create physics component for alien
         auto physics = std::make_unique<AlienPhysicsComponent>();
         // Create graphics component for alien
         auto graphics = std::make_unique<TextureGraphicsComponent>(texture);
         // Create alien game object
-        auto obj = std::make_unique<GameObject>(std::move(input),
-                                                std::move(physics),
-                                                std::move(graphics));
+        auto obj = std::make_unique<GameObject>();
+        obj->AddComponent(std::move(physics));
+        obj->AddComponent(std::move(graphics));
         // Register the alien to the renderer system
         renderer_.RegisterGameObjects(obj.get());
         // Set aliens dimensions
@@ -348,18 +362,24 @@ void Game::DetectBulletCollision(GameObject *bullet) {
 }
 
 void Game::CreateBackgound() {
-    // Create input component for star
-    auto input = std::make_unique<NoneInputComponent>();
-    // Create physics component for star
+    // Create physics component for star background
     auto physics = std::make_unique<StarPhysicsComponent>(*this);
-    // Create graphics component for star
+    // Create graphics component for star background
     auto graphics = std::make_unique<StarGraphicsComponent>(physics.get());
-    // Create star object
-    background_ = std::make_unique<GameObject>(std::move(input),
-                                            std::move(physics),
-                                            std::move(graphics));
-    // Register the star to the renderer system
+    // Create star background object
+    background_ = std::make_unique<GameObject>();
+    background_->AddComponent(std::move(physics));
+    background_->AddComponent(std::move(graphics));
+    // Register the star background to the renderer system
     renderer_.RegisterGameObjects(background_.get());
-    // Set stars side
+    // Set star background side
     background_->side = GameObject::Side::kNeutral;
+}
+
+void Game::AddBullet(std::unique_ptr<GameObject> obj) {
+    bullets_.emplace_back(std::move(obj));
+}
+
+void Game::AddGameObject(std::unique_ptr<GameObject> obj) {
+    pendingObjs_.emplace_back(std::move(obj));
 }

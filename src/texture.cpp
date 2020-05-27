@@ -4,15 +4,11 @@
 
 #include "SDL_image.h"
 
-
+// RUBRIC: The project uses scope / Resource Acquisition Is Initialization (RAII) where appropriate.
+// RUBRIC: Class constructors utilize member initialization lists.
 Texture::Texture (std::string const &filename, SDL_Renderer *sdl_renderer)
 : filename_(filename), renderer_(sdl_renderer)
 {
-    if (renderer_ == nullptr) {
-        SDL_LogMessage(SDL_LOG_CATEGORY_RENDER, SDL_LOG_PRIORITY_CRITICAL,
-                    "Texture failed: sdl_renderer points to nullptr");
-        return;
-    }
     SDL_LogMessage(SDL_LOG_CATEGORY_RENDER, SDL_LOG_PRIORITY_INFO,
                     "Loading texture %s", filename_.c_str());
     // Load image from filesystem
@@ -23,17 +19,11 @@ Texture::Texture (std::string const &filename, SDL_Renderer *sdl_renderer)
         return;
     }
     // Get height and width of texture
-    if (SDL_QueryTexture(texture_, NULL, NULL, &width_, &height_))
-    {
-        SDL_LogMessage(SDL_LOG_CATEGORY_RENDER, SDL_LOG_PRIORITY_CRITICAL,
-                    "SDL_QueryTexture failed: %s", SDL_GetError());
-        if (texture_ != nullptr) {
-            SDL_DestroyTexture(texture_);
-            texture_ == nullptr;
-        }
-    }
+    SDL_QueryTexture(texture_, NULL, NULL, &width_, &height_);
 }
 
+
+// RUBRIC: The project uses destructors appropriately.
 Texture::~Texture() {
     if (texture_ != nullptr) {
         SDL_DestroyTexture(texture_);

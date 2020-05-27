@@ -7,12 +7,15 @@
 #include "SDL.h"
 
 
-
+// RUBRIC: Classes encapsulate behavior.
+// RUBRIC: Classes abstract implementation details from their interfaces.
+// RUBRIC: Classes use appropriate access specifiers for class members.
+// RUBRIC: The project uses Object Oriented Programming techniques.
 class Texture {
 public:
     Texture (std::string const &filename, SDL_Renderer *sdl_renderer);
 
-    // RUBRIC: Rule of five
+    // RUBRIC: The project follows the Rule of 5.
     ~Texture();
     Texture(const Texture &source);            // Copy contructor
     Texture &operator=(const Texture &source); // Copy assignment operator

@@ -2,7 +2,9 @@
 
 namespace Utility {
 
-SDL_FPoint CalcSlope(SDL_FPoint pos, SDL_Rect target)
+
+// RUBRIC: The project makes use of references in function declarations.
+SDL_FPoint CalcSlope(SDL_FPoint const &pos, SDL_Rect const &target)
 {
     SDL_FPoint retval;
 

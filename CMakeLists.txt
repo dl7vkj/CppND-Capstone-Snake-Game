@@ -30,6 +30,7 @@ add_executable(SnakeGame
     src/utility.cpp
     src/game_object.cpp
     src/texture_graphics_component.cpp
+    src/game_components.cpp
 )
 #string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)
 target_link_libraries(SnakeGame ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})

@@ -8,9 +8,10 @@
 #include "SDL_image.h"
 
 #include "utility.h"
-#include "graphics_component.h"
+#include "component.h"
 
 
+// RUBRIC: Class constructors utilize member initialization lists.
 Renderer::Renderer(const std::size_t screen_width,
                    const std::size_t screen_height)
     : screenWidth_(screen_width),

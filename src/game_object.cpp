@@ -1,18 +1,9 @@
 #include "game_object.h"
 
-#include "renderer.h"
-#include "game.h"
+// #include "renderer.h"
+// #include "game.h"
 
 GameObject::GameObject() {}
-
-GameObject::GameObject(std::unique_ptr<InputComponent> input,
-                       std::unique_ptr<PhysicsComponent> physics,
-                       std::unique_ptr<GraphicsComponent> graphics)
-{
-    AddComponent(std::move(input));
-    AddComponent(std::move(physics));
-    AddComponent(std::move(graphics));
-}
 
 void GameObject::AddComponent(std::unique_ptr<InputComponent> comp) {
     inputComps_.emplace_back(std::move(comp));
