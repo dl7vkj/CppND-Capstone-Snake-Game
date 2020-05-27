@@ -98,7 +98,7 @@ void AlienPhysicsComponent::FireBullet(class GameObject &obj, class Game &game) 
     y += (obj.h / 2);
 
     // Set bullet velocity
-    SDL_FPoint slope =  Utility::CalcSlope({x, y}, game.GetPlayerRect());
+    Utility::FPoint slope =  Utility::CalcSlope({x, y}, game.GetPlayerRect());
     slope.x *= Config::kAlienBulletSpeed;
     slope.y *= Config::kAlienBulletSpeed;
     game.FireBullet(x, y, slope.x, slope.y, GameObject::Side::kAlien);

@@ -14,9 +14,14 @@ T Max(const T &a, const T &b) {
     return a < b ? b : a;
 }
 
+struct FPoint {
+    float x;
+    float y;
+};
+
 // RUBRIC: The project makes use of references in function declarations.
 // Calculate the slope from position pos to center of target
-SDL_FPoint CalcSlope(SDL_FPoint const &pos, SDL_Rect const &target);
+FPoint CalcSlope(FPoint const &pos, SDL_Rect const &target);
 
 }
 
