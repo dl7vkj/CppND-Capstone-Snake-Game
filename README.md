@@ -63,6 +63,11 @@ In the code some rubrics are marked with a "// RUBRIC:" comment.
     * 'game_object.h' line 41
     * 'game.cpp' e.g. line 42 ff.
 
+## Structure
+Class diagramm (misisng some classes):
+
+<img src="class_diagram.png"/>
+
 
 ## Dependencies for Running Locally
 * cmake >= 3.7
