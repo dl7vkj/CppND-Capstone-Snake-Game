@@ -3,7 +3,7 @@
 #include <vector>
 #include <random>
 
-#include "SDL.h"
+#include "SDL2/SDL.h"
 
 #include "config.h"
 #include "utility.h"

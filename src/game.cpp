@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <type_traits>
 
-#include "SDL.h"
+#include "SDL2/SDL.h"
 
 #include "config.h"
 #include "texture.h"

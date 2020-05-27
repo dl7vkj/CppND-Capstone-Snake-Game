@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 
-#include "SDL.h"
+#include "SDL2/SDL.h"
 
 
 // RUBRIC: Classes encapsulate behavior.

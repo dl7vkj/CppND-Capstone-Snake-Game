@@ -2,7 +2,8 @@
 
 #include <iostream>
 
-#include "SDL_image.h"
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_image.h"
 
 // RUBRIC: The project uses scope / Resource Acquisition Is Initialization (RAII) where appropriate.
 // RUBRIC: Class constructors utilize member initialization lists.
