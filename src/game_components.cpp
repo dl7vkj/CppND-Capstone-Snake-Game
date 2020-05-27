@@ -130,8 +130,6 @@ void BulletPhysicsComponent::Update(GameObject &obj, Game &game) {
 };
 
 
-
-// RUBRIC: Class constructors utilize member initialization lists.
 StarPhysicsComponent::StarPhysicsComponent(Game &game)
 : screenWidth_(game.GetRendererHandle().GetScreenWidth()) {
     // Setup random generator
@@ -161,7 +159,8 @@ void StarPhysicsComponent::Update(GameObject &obj, Game &game) {
 };
 
 // RUBRIC: Class constructors utilize member initialization lists.
-StarGraphicsComponent::StarGraphicsComponent(StarPhysicsComponent *starPhyC_) : starPhyC_(starPhyC_) {}
+StarGraphicsComponent::StarGraphicsComponent(StarPhysicsComponent *starPhyC_)
+: starPhyC_(starPhyC_) {}
 
 void StarGraphicsComponent::Update(class GameObject &obj, class Renderer &renderer) {
     std::vector<StarPhysicsComponent::Star> const &stars = starPhyC_->GetStars();

@@ -22,11 +22,10 @@ public:
     virtual void Update(class GameObject &obj, const uint8_t *keyboard_state) = 0;
 };
 
-// RUBRIC: The project makes use of references in function declarations.
 class PhysicsComponent : public Component {
 public:
     Type GetType() const final { return Component::Type::kPhysics; }
-
+    // RUBRIC: The project makes use of references in function declarations.
     virtual void Update(class GameObject &obj, class Game &game) = 0;
 };
 

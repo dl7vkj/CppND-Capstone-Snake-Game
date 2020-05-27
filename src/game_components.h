@@ -54,7 +54,6 @@ public:
         float dx;
     };
 
-    // RUBRIC: Class constructors utilize member initialization lists.
     StarPhysicsComponent(Game &game);
 
     void Update(GameObject &obj, Game &game) override;
@@ -69,7 +68,6 @@ private:
 
 class StarGraphicsComponent : public GraphicsComponent {
 public:
-    // RUBRIC: Class constructors utilize member initialization lists.
     StarGraphicsComponent(StarPhysicsComponent *starPhyC_);
 
     void Update(class GameObject &obj, class Renderer &renderer) override;
