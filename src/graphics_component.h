@@ -6,6 +6,8 @@
 
 class GraphicsComponent : public Component {
 public:
+    Type GetType() const final { return Component::Type::kGraphics; }
+
     virtual void Update(class GameObject &obj, class Renderer &renderer) = 0;
 };
 

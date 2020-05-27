@@ -6,6 +6,8 @@
 
 class InputComponent : public Component {
 public:
+    Type GetType() const final { return Component::Type::kInput; }
+
     virtual void Update(class GameObject &obj, const uint8_t *keyboard_state) = 0;
 };
 

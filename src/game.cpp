@@ -38,7 +38,7 @@ Game::Game()
 
     //Create the player
     // Get texture for player
-    Texture *texture = renderer_.GetTexture(Config::kPlayerImage);
+    Texture *texture = renderer_.GetTextureHandle(Config::kPlayerImage);
     // Create input component for player
     auto input = std::make_unique<PlayerInputComponent>();
     // Create physics component for player
@@ -124,6 +124,7 @@ void Game::Input() {
             player->isAlive = true;
             player->health = kPlayerHealth;
             remainingLives_ = kRemainingLives;
+            player->fireBullet = false;
             player->x = 100;
             player->y = renderer_.GetScreenHeight()/2;
             state_ = kPlay;
@@ -182,14 +183,15 @@ void Game::Update() {
 
         auto &player = objs_[0];
 
-        if (remainingLives_ < 0) {
-            state_ = kPause;
-            Clear();
-            return;
-        } else if (player->health <= 0) {
+
+        if (player->health <= 0) {
             state_ = kRespawn;
+            player->fireBullet = false;
             Clear();
             remainingLives_--;
+            if (remainingLives_ < 0) {
+                state_ = kPause;
+            }
             return;
         }
 
@@ -199,6 +201,7 @@ void Game::Update() {
             auto &player = objs_[0];
             state_ = kPlay;
             respawnTimer_ = kRespawnTime;
+            player->fireBullet = false;
             player->isAlive = true;
             player->health = kPlayerHealth;
         }
@@ -238,9 +241,9 @@ void Game::FireBullet(float x, float y, float dx, float dy,
     // Get texture for bullet
     Texture *texture;
     if (side == GameObject::Side::kPlayer) {
-        texture = renderer_.GetTexture(Config::kBulletImage);
+        texture = renderer_.GetTextureHandle(Config::kBulletImage);
     } else {
-        texture = renderer_.GetTexture(Config::kAlienBulletImage);
+        texture = renderer_.GetTextureHandle(Config::kAlienBulletImage);
     }
     // Create input component for bullet
     auto input = std::make_unique<NoneInputComponent>();
@@ -277,7 +280,7 @@ void Game::SpawnAliens() {
     if (--alienSpawnTimer_ <= 0) {
         // Create an alien
         // Get texture for alien
-        Texture *texture = renderer_.GetTexture(Config::kEnemyImage);
+        Texture *texture = renderer_.GetTextureHandle(Config::kEnemyImage);
         // Create input component for alien
         auto input = std::make_unique<NoneInputComponent>();
         // Create physics component for alien
