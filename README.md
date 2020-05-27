@@ -64,7 +64,7 @@ In the code some rubrics are marked with a "// RUBRIC:" comment.
     * 'game.cpp' e.g. line 42 ff.
 
 ## Structure
-Class diagramm (misisng some classes):
+Class diagramm (missing some classes):
 
 <img src="class_diagram.png"/>
 
