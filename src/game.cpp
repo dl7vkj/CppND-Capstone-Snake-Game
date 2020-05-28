@@ -14,13 +14,7 @@
 
 #include "game_object.h"
 #include "game_components.h"
-// #include "player_input_component.h"
-// #include "player_physics_component.h"
 #include "texture_graphics_component.h"
-// #include "bullet_physics_component.h"
-// #include "alien_physics_component.h"
-// #include "star_physics_component.h"
-// #include "star_graphics_component.h"
 
 
 Game::Game()
@@ -376,10 +370,10 @@ void Game::CreateBackgound() {
     background_->side = GameObject::Side::kNeutral;
 }
 
-void Game::AddBullet(std::unique_ptr<GameObject> obj) {
+void Game::AddBullet(UPtrGameObject obj) {
     bullets_.emplace_back(std::move(obj));
 }
 
-void Game::AddGameObject(std::unique_ptr<GameObject> obj) {
+void Game::AddGameObject(UPtrGameObject obj) {
     pendingObjs_.emplace_back(std::move(obj));
 }

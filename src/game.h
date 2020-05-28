@@ -14,6 +14,9 @@ class Game {
 public:
     enum State{kPlay, kRespawn, kPause};
 
+    using UPtrGameObject = std::unique_ptr<GameObject>;
+    using VecUPtrGameObject = std::vector<UPtrGameObject>;
+
     Game();
 
     Renderer &GetRendererHandle();
@@ -38,10 +41,10 @@ private:
     static constexpr int kPlayerHealth{3};
 
     Renderer renderer_;
-    std::vector<std::unique_ptr<GameObject>> objs_{};        // GameObjects
-    std::vector<std::unique_ptr<GameObject>> pendingObjs_{}; // Pending Objects
-    std::vector<std::unique_ptr<GameObject>> bullets_{};     // Bullets
-    std::unique_ptr<GameObject> background_;
+    VecUPtrGameObject objs_{};        // GameObjects
+    VecUPtrGameObject pendingObjs_{}; // Pending Objects
+    VecUPtrGameObject bullets_{};     // Bullets
+    UPtrGameObject background_;
 
     int alienSpawnTimer_{60};
     bool running_{true};
@@ -67,8 +70,8 @@ private:
     void SpawnAliens();
     void CreateBackgound();
 
-    void AddBullet(std::unique_ptr<GameObject> obj);
-    void AddGameObject(std::unique_ptr<GameObject> obj);
+    void AddBullet(UPtrGameObject obj);
+    void AddGameObject(UPtrGameObject obj);
 };
 
 #endif // GAME_H
