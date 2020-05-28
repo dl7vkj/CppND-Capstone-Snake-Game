@@ -133,3 +133,18 @@ void Texture::Blit(int x, int y) const {
     // Draw image on SDL renderer.
     SDL_RenderCopy(renderer_, texture_, NULL, &dest);
 }
+
+void Texture::Blit(int x, int y, int w, int h) const {
+    if (nullptr == texture_) {
+        return;
+    }
+    SDL_Rect dest;
+
+    dest.x = x;
+    dest.y = y;
+    dest.w = w;
+    dest.h = h;
+
+    // Draw image on SDL renderer.
+    SDL_RenderCopy(renderer_, texture_, NULL, &dest);
+}

@@ -39,6 +39,17 @@ private:
 };
 
 
+class FighterGraphicsComponent : public GraphicsComponent {
+public:
+    FighterGraphicsComponent(class Texture *normal, class Texture *explosion)
+    : texNormal_(normal), texExplosion_(explosion) {}
+    void Update(class GameObject &obj, class Renderer &renderer) override;
+private:
+    class Texture *texNormal_;
+    class Texture *texExplosion_;
+};
+
+
 class BulletPhysicsComponent : public PhysicsComponent {
 public:
     void Update(GameObject &obj, Game &game) override;
@@ -58,11 +69,13 @@ public:
 
     void Update(GameObject &obj, Game &game) override;
 
+    int GetBackgroundX() { return backgroundX_; }
     std::vector<Star> &GetStars() { return stars_; }
 
 private:
     std::vector<Star> stars_{};
     int screenWidth_;
+    int backgroundX_{0};
 };
 
 
@@ -74,6 +87,7 @@ public:
 
 private:
     StarPhysicsComponent *starPhyC_;
+    class Texture *texture_{nullptr};
 };
 
 

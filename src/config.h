@@ -19,6 +19,8 @@ namespace Config {
   const std::string kEnemyImage{"../gfx/enemy.png"};
   const std::string kBulletImage{"../gfx/playerBullet.png"};
   const std::string kAlienBulletImage{"../gfx/alienBullet.png"};
+  const std::string kBgImage{"../gfx/background.png"};
+  const std::string kExplosionImage{"../gfx/explosion.png"};
 }
 
 #endif // CONFIG_H

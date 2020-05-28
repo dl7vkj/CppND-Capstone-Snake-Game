@@ -104,6 +104,18 @@ void AlienPhysicsComponent::FireBullet(class GameObject &obj, class Game &game) 
     game.FireBullet(x, y, slope.x, slope.y, GameObject::Side::kAlien);
 }
 
+void FighterGraphicsComponent::Update(GameObject &obj, Renderer &renderer) {
+    if (nullptr == texNormal_ || nullptr == texExplosion_)
+        return;
+    // NOTE: Adding 0.5 for rounding e.g. int(1.6 + 0.5) = 2
+    if (obj.health > 0) {
+        texNormal_->Blit(obj.x + 0.5f, obj.y + 0.5f);
+    } else if (obj.health == 0) {
+        SDL_Renderer * sdl_renderer = renderer.GetSDLRendererHandle();
+        texExplosion_->Blit(obj.x + 0.5f, obj.y + 0.5f);
+    }
+}
+
 void BulletPhysicsComponent::Update(GameObject &obj, Game &game) {
     // Move the object
     obj.x += obj.dx;
@@ -139,8 +151,8 @@ StarPhysicsComponent::StarPhysicsComponent(Game &game)
 
     int screenHeight = game.GetRendererHandle().GetScreenHeight();
     Star star;
-    // Create 500 stars
-    for (int i = 0; i < 500; i++) {
+    // Create stars
+    for (int i = 0; i < 200; i++) {
         star.x = dist(eng) % screenWidth_;
         star.y = dist(eng) % screenHeight;
         star.dx = (10 + dist(eng) % 20)*-0.1f;
@@ -149,6 +161,11 @@ StarPhysicsComponent::StarPhysicsComponent(Game &game)
 }
 
 void StarPhysicsComponent::Update(GameObject &obj, Game &game) {
+    if (--backgroundX_ < -screenWidth_)
+	{
+		backgroundX_ = 0;
+	}
+
     for (auto &star: stars_) {
         star.x += star.dx;
         // Wrap
@@ -166,8 +183,20 @@ void StarGraphicsComponent::Update(class GameObject &obj, class Renderer &render
     std::vector<StarPhysicsComponent::Star> const &stars = starPhyC_->GetStars();
     // TODO: Add to constructor
     SDL_Renderer *sdl_renderer = renderer.GetSDLRendererHandle();
+    int screenWidth = renderer.GetScreenWidth();
+    int screenHeight = renderer.GetScreenHeight();
+
+    if (texture_ == nullptr)
+        texture_ = renderer.GetTextureHandle(Config::kBgImage);
+
     if (sdl_renderer == nullptr)
         return;
+
+    for (int x = starPhyC_->GetBackgroundX() ; x < screenWidth ; x += screenWidth)
+	{
+		texture_->Blit(x, 0, screenWidth, screenHeight);
+	}
+
     for (auto &star: stars) {
         int c = star.dx;
         c *= -84;

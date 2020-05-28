@@ -31,6 +31,9 @@ public:
 
     // Draw(blit) texture on SDL renderer at position (x, y).
     void Blit(int x, int y) const;
+    // Draw(blit) texture on SDL renderer at position (x, y),
+    // with some desired width and height
+    void Blit(int x, int y, int w, int h) const;
 
 private:
     std::string filename_;
